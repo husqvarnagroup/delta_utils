@@ -1,0 +1,26 @@
+[tool.poetry]
+name = "delta_utils"
+version = "0.0.0"
+description = ""
+authors = ["Niels Lemmens <1936122+bulv1ne@users.noreply.github.com>"]
+readme = "README.md"
+repository = "https://github.com/bulv1ne/delta_utils"
+license = "MIT"
+
+[tool.poetry.dependencies]
+python = "^3.8"
+
+[tool.poetry.dev-dependencies]
+black = "*"
+isort = "*"
+flake8 = "*"
+mypy = "*"
+pre-commit = "*"
+pytest = "*"
+pytest-cov = "*"
+databricks-connect = "9.1.*"
+mkdocs = "*"
+
+[build-system]
+requires = ["poetry-core>=1.0.0"]
+build-backend = "poetry.core.masonry.api"

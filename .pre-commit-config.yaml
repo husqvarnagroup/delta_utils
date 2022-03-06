@@ -1,0 +1,34 @@
+repos:
+  - repo: https://github.com/pre-commit/pre-commit-hooks
+    rev: v4.1.0
+    hooks:
+      - id: check-yaml
+      - id: end-of-file-fixer
+      - id: trailing-whitespace
+  - repo: local
+    hooks:
+      - id: black
+        name: Black
+        entry: poetry run black
+        language: system
+        types: [python]
+      - id: isort
+        name: Isort
+        entry: poetry run isort
+        language: system
+        types: [python]
+      - id: flake8
+        name: Flake8
+        entry: poetry run flake8
+        language: system
+        types: [python]
+      - id: mypy
+        name: mypy
+        entry: poetry run mypy
+        language: system
+        types: [python]
+      - id: hadolint
+        name: Hadolint
+        entry: hadolint Dockerfile
+        types: [dockerfile]
+        language: system
