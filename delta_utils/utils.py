@@ -27,7 +27,9 @@ def read_change_feed(spark: SparkSession, path: str, **kwargs):
             raise e
 
 
-def last_written_timestamp_for_delta_path(spark: SparkSession, path: str) -> datetime:
+def last_written_timestamp_for_delta_path(
+    spark: SparkSession, path: str
+) -> Optional[datetime]:
     return (
         spark.sql(f"DESCRIBE HISTORY delta.`{path}`")
         .where(F.col("operation").isin(["WRITE", "MERGE"]))
