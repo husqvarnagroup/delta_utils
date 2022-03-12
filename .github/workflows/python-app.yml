@@ -28,14 +28,13 @@ jobs:
     - name: Docker build test image
       env:
         DATABRICKS_CONNECT: ${{ secrets.DATABRICKS_CONNECT }}
-      run: |
-        echo "$DATABRICKS_CONNECT" > .databricks-connect
-        docker-compose build pyspark
-    - name: Databricks connect test
-      env:
         TEST_DIR: ${{ secrets.TEST_DIR }}
       run: |
+        echo "$DATABRICKS_CONNECT" > .databricks-connect
         echo "TEST_DIR=$TEST_DIR" > .env
+        docker-compose build pyspark
+    - name: Databricks connect test
+      run: |
         docker-compose run pyspark databricks-connect
     - name: Test
       run: |
