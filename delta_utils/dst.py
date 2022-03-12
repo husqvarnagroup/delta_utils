@@ -4,35 +4,8 @@ from typing import Optional
 
 from delta import DeltaTable  # type: ignore
 from pyspark.sql import SparkSession, functions as F
-from pyspark.sql.utils import AnalysisException
 
-
-def last_written_timestamp_for_delta_path(spark, path: str) -> datetime:
-    return (
-        spark.sql(f"DESCRIBE HISTORY delta.`{path}`")
-        .where(F.col("operation").isin(["WRITE", "MERGE"]))
-        .orderBy(F.col("timestamp").desc())
-        .select("timestamp")
-        .first()["timestamp"]
-    )
-
-
-class NoNewDataException(Exception):
-    pass
-
-
-def read_change_feed(spark, path: str, **kwargs):
-    try:
-        return spark.read.load(path, format="delta", readChangeFeed=True, **kwargs)
-    except AnalysisException as e:
-        error_msg = str(e)
-        if (
-            error_msg.startswith("The provided timestamp")
-            and "is after the latest version available to this" in error_msg
-        ):
-            raise NoNewDataException(error_msg)
-        else:
-            raise e
+from .utils import last_written_timestamp_for_delta_path, NoNewDataException, read_change_feed
 
 
 @dataclass
