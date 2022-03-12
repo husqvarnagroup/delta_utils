@@ -32,10 +32,10 @@ jobs:
       run: |
         echo "$DATABRICKS_CONNECT" > .databricks-connect
         echo "TEST_DIR=$TEST_DIR" > .env
-        docker-compose build pyspark
+        docker-compose build pytest
     - name: Databricks connect test
       run: |
-        docker-compose run pyspark databricks-connect
+        docker-compose run pytest databricks-connect
     - name: Test
       run: |
-        docker-compose run pyspark
+        docker-compose run pytest
