@@ -6,3 +6,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 
 ## [Unreleased]
+
+## [0.0.1] - 2022-03-13
+### Added
+- First working code
+- Tests
+- Documentation
+
+[Unreleased]: https://github.com/bulv1ne/delta_utilscompare/v0.0.1...HEAD
