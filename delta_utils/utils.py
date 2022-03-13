@@ -1,6 +1,6 @@
 from dataclasses import dataclass, field
-from datetime import datetime
-from typing import Optional, Union
+from datetime import datetime, timedelta
+from typing import Optional, Tuple, Union
 
 from delta import DeltaTable  # type: ignore
 from pyspark.sql import DataFrame, DataFrameWriter, SparkSession, functions as F
@@ -46,9 +46,12 @@ class DeltaChanges:
     last_written_timestamp: Optional[datetime] = field(init=False)
 
     def __post_init__(self):
+        self._update_last_written_timestamp()
+
+    def _update_last_written_timestamp(self):
         if DeltaTable.isDeltaTable(self.spark, self.delta_path):
             self.last_written_timestamp = last_written_timestamp_for_delta_path(
-                self.delta_path
+                self.spark, self.delta_path
             )
         else:
             self.last_written_timestamp = None
@@ -68,8 +71,40 @@ class DeltaChanges:
     def save(self, dataframe: Union[DataFrame, DataFrameWriter]):
         if isinstance(dataframe, DataFrame):
             dataframe = dataframe.write
-        dataframe.save(self.delta_path)
+        dataframe.save(self.delta_path, format="delta", mode="append")
         self.enable_change_feed()
+        self._update_last_written_timestamp()
+
+    def upsert(
+        self,
+        dataframe: DataFrame,
+        join_fields: Tuple[str],
+        update_fields: Optional[Tuple[str]] = None,
+    ):
+        if not DeltaTable.isDeltaTable(self.spark, self.delta_path):
+            self.save(dataframe)
+            return
+        dataframe.createOrReplaceTempView("tmptable")
+        sql_statement = []
+        sql_statement.append(f"MERGE INTO delta.`{self.delta_path}` source")
+        sql_statement.append("USING tmptable updates")
+
+        condition = " AND ".join(
+            f"source.{field} IS NOT DISTINCT FROM updates.{field}"
+            for field in join_fields
+        )
+        sql_statement.append(f"ON {condition}")
+        if update_fields is None:
+            sql_statement.append("WHEN MATCHED THEN UPDATE SET *")
+        elif update_fields:  # A non-empty tuple
+            updates = ", ".join(
+                f"source.{field} = updates.{field}" for field in update_fields
+            )
+            sql_statement.append(f"WHEN MATCHED THEN UPDATE SET {updates}")
+        sql_statement.append("WHEN NOT MATCHED THEN INSERT *")
+
+        self.spark.sql(" ".join(sql_statement))
+        self.spark.catalog.dropTempView("tmptable")
 
     def enable_change_feed(self):
         if not DeltaTable.isDeltaTable(self.spark, self.delta_path):
@@ -96,12 +131,12 @@ class NonDeltaLastWrittenTimestamp:
     read_changes_times: dict = field(init=False)
 
     def __post_init__(self):
-        (
-            DeltaTable.createIfNotExists(self.spark)
-            .location(self.path)
-            .addColumn("name", "STRING")
-            .addColumn("last_written_timestamp", "TIMESTAMP")
-            .execute()
+        self.spark.sql(
+            f"""
+        CREATE TABLE IF NOT EXISTS delta.`{self.path}`
+        (name STRING, last_written_timestamp TIMESTAMP)
+        USING delta
+        """
         )
         self.read_changes_times = {}
 
@@ -113,11 +148,10 @@ class NonDeltaLastWrittenTimestamp:
             .first()
         )
         if row:
-            print(row["last_written_timestamp"])
             return row["last_written_timestamp"]
         return None
 
-    def set_last_written_timestamp(self, name):
+    def set_last_written_timestamp(self, name: str):
         try:
             last_written_timestamp = self.read_changes_times.pop(name)
         except KeyError:
@@ -128,8 +162,21 @@ class NonDeltaLastWrittenTimestamp:
             ).write.save(self.path, format="delta", mode="append")
         )
 
+    def set_all_last_written_timestamps(self):
+        for name in list(self.read_changes_times.keys()):
+            self.set_last_written_timestamp(name)
+
     def read_changes(self, name: str, path: str) -> DataFrame:
-        self.read_changes_times.setdefault(name, datetime.utcnow())
+        self.read_changes_times.setdefault(
+            name,
+            # If you read from a table the same second that it's written, a race condition happens because
+            # last_written_timestamp_for_delta_path has only second resolution, not millisecond
+            max(
+                datetime.utcnow(),
+                last_written_timestamp_for_delta_path(self.spark, path)
+                + timedelta(seconds=1),
+            ),
+        )
         last_written_timestamp = self.get_last_written_timestamp(name)
         if last_written_timestamp is not None:
             return read_change_feed(
@@ -142,14 +189,8 @@ class NonDeltaLastWrittenTimestamp:
             .withColumn("_commit_timestamp", F.lit(datetime(1970, 1, 1)))
         )
 
-    def i_m_sure_i_want_to_delete_something_here(self, name):
-        self.spark.sql(f"DELETE FROM delta.`{self.path}` WHERE name = '{name}'")
 
-    def toDF(self):
-        return self.spark.read.load(self.path, format="delta")
-
-
-def new_and_updated(df, id_field: str):
+def new_and_updated(df: DataFrame, id_field: str):
     columns = [col for col in df.columns if not col.startswith("_") and col != id_field]
 
     win = Window.partitionBy(id_field)
