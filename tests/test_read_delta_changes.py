@@ -3,7 +3,7 @@ from datetime import datetime, timedelta
 import pytest
 from pyspark.sql.utils import AnalysisException
 
-from delta_utils.utils import (
+from delta_utils import (
     NoNewDataException,
     last_written_timestamp_for_delta_path,
     read_change_feed,

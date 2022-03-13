@@ -3,10 +3,11 @@
 ## Installation
 
 ```bash
-pip install ...
+pip install git+https://github.com/bulv1ne/delta_utils.git
 ```
 
-Add *TODO* to databricks.
+Or in Databricks, add "git+https://github.com/bulv1ne/delta_utils.git" to your Libraries (PyPI)
+
 
 ## Databricks connect setup
 

@@ -5,7 +5,7 @@ from operator import add, or_
 import pytest
 from pyspark.sql import types as T
 
-from delta_utils.utils import new_and_updated
+from delta_utils import new_and_updated
 
 test_cases = [
     (

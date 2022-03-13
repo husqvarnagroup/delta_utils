@@ -4,4 +4,4 @@ set -eax
 
 poetry install
 
-pytest --cov=delta_utils --cov-report term-missing -vvv
+pytest --cov=delta_utils --cov-report term-missing -vvv -x

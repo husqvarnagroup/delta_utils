@@ -1,6 +1,6 @@
 import pytest
 
-from delta_utils.utils import NonDeltaLastWrittenTimestamp, NoNewDataException
+from delta_utils import NonDeltaLastWrittenTimestamp, NoNewDataException
 
 
 def create_table(spark, path: str):

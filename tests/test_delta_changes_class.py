@@ -1,6 +1,6 @@
 from datetime import datetime
 
-from delta_utils.utils import DeltaChanges
+from delta_utils import DeltaChanges
 
 
 def setup_delta_table(spark, path: str) -> DeltaChanges:
