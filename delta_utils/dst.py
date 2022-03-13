@@ -5,7 +5,7 @@ from typing import Optional
 from delta import DeltaTable  # type: ignore
 from pyspark.sql import SparkSession, functions as F
 
-from .utils import (
+from .core import (
     NoNewDataException,
     last_written_timestamp_for_delta_path,
     read_change_feed,
