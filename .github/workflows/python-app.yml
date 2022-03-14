@@ -16,7 +16,7 @@ jobs:
     strategy:
       matrix:
         python_version: ['3.8']
-        code_command: [flake8, isort, black]
+        code_command: [flake8, isort, black, mypy]
 
     steps:
     - uses: actions/checkout@v2

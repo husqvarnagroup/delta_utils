@@ -137,16 +137,13 @@ class NonDeltaLastWrittenTimestamp:
             self.set_last_written_timestamp(name)
 
     def read_changes(self, name: str, path: str) -> DataFrame:
-        self.read_changes_times.setdefault(
-            name,
+        last_written_timestamp = last_written_timestamp_for_delta_path(self.spark, path)
+        now = datetime.utcnow()
+        if last_written_timestamp:
             # If you read from a table the same second that it's written, a race condition happens because
             # last_written_timestamp_for_delta_path has only second resolution, not millisecond
-            max(
-                datetime.utcnow(),
-                last_written_timestamp_for_delta_path(self.spark, path)
-                + timedelta(seconds=1),
-            ),
-        )
+            set_timestamp = max(now, last_written_timestamp + timedelta(seconds=1))
+        self.read_changes_times.setdefault(name, set_timestamp)
         last_written_timestamp = self.get_last_written_timestamp(name)
         if last_written_timestamp is not None:
             return read_change_feed(
@@ -167,7 +164,7 @@ def new_and_updated(df: DataFrame, id_field: str):
 
     # Insert = if the _id's last version is change type insert, insert it
     # Otherwise it will be in the df_to_update dataframe
-    df_to_insert = (
+    df_to_insert_processing = (
         df.withColumn("_first_version", F.min("_commit_version").over(win))
         .withColumn("_last_version", F.max("_commit_version").over(win))
         .where(
@@ -189,15 +186,15 @@ def new_and_updated(df: DataFrame, id_field: str):
         )
     )
     if (
-        "delete_struct" in df_to_insert.columns
-        and "insert_struct" in df_to_insert.columns
+        "delete_struct" in df_to_insert_processing.columns
+        and "insert_struct" in df_to_insert_processing.columns
     ):
-        df_to_insert = df_to_insert.where(
+        df_to_insert_processing = df_to_insert_processing.where(
             (F.col("delete_struct") != F.col("insert_struct"))
             & F.col("insert_tmp").isNotNull()
         )
-    if "insert_struct" in df_to_insert.columns:
-        df_to_insert = df_to_insert.select(id_field, "insert_struct.*")
+    if "insert_struct" in df_to_insert_processing.columns:
+        df_to_insert = df_to_insert_processing.select(id_field, "insert_struct.*")
     else:
         df_to_insert = None
 
