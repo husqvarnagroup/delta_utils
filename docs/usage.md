@@ -8,7 +8,7 @@ Let's read from `/path/events` and filter out only the events for Anna.
 If we've written to `/path/anna_events` before we will only read the changes since the last written time.
 
 ```python
-from delta_utils.utils import DeltaChanges, NoNewDataException
+from delta_utils import DeltaChanges, NoNewDataException
 
 from pyspark.sql import functions as F
 
