@@ -39,3 +39,7 @@ def last_written_timestamp_for_delta_path(
         .select("timestamp")
         .first()["timestamp"]
     )
+
+
+def spark_current_timestamp(spark: SparkSession) -> datetime:
+    return spark.sql("SELECT current_timestamp()").first()[0]

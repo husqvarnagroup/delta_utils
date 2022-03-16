@@ -6,7 +6,7 @@ from delta import DeltaTable  # type: ignore
 from pyspark.sql import DataFrame, DataFrameWriter, SparkSession, functions as F
 from pyspark.sql.window import Window
 
-from .core import last_written_timestamp_for_delta_path, read_change_feed
+from .core import last_written_timestamp_for_delta_path, read_change_feed, spark_current_timestamp
 
 
 @dataclass
@@ -138,7 +138,7 @@ class NonDeltaLastWrittenTimestamp:
 
     def read_changes(self, name: str, path: str) -> DataFrame:
         last_written_timestamp = last_written_timestamp_for_delta_path(self.spark, path)
-        now = datetime.utcnow()
+        now = spark_current_timestamp(self.spark)
         if last_written_timestamp:
             # If you read from a table the same second that it's written, a race condition happens because
             # last_written_timestamp_for_delta_path has only second resolution, not millisecond

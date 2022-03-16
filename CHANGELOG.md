@@ -6,6 +6,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 
 ## [Unreleased]
+### Added
+- `delta_utils.core.spark_current_timestamp` function to return the spark server timestamp (resolves race conditions)
 
 ## [0.0.1] - 2022-03-13
 ### Added

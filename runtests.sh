@@ -4,4 +4,5 @@ set -eax
 
 poetry install
 
-pytest --cov=delta_utils --cov-report term-missing -vvv -x
+# shellcheck disable=SC2068
+pytest --cov=delta_utils --cov-report term-missing -vvv -x $@
