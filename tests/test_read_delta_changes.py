@@ -5,6 +5,7 @@ from pyspark.sql.utils import AnalysisException
 
 from delta_utils import (
     NoNewDataException,
+    ReadChangeFeedDisabled,
     last_written_timestamp_for_delta_path,
     read_change_feed,
 )
@@ -77,3 +78,17 @@ def test_raise_analysis_exception(spark, base_test_dir):
     path = f"{base_test_dir}trusted"
     with pytest.raises(AnalysisException, match=r"is not a Delta table"):
         read_change_feed(spark, path, startingTimestamp=datetime(1970, 1, 1))
+
+
+def test_raise_read_change_feed_disabled(spark, base_test_dir):
+    path = f"{base_test_dir}trusted"
+    spark.sql(
+        f"""
+    CREATE TABLE delta.`{path}` (text string, number long)
+    USING delta
+    TBLPROPERTIES (delta.enableChangeDataFeed = false)
+    """
+    )
+    append_data(spark, path, [("one", 1)])
+    with pytest.raises(ReadChangeFeedDisabled):
+        read_change_feed(spark, path, startingVersion=1)

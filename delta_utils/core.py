@@ -10,8 +10,23 @@ class NoNewDataException(Exception):
     pass
 
 
+class ReadChangeFeedDisabled(Exception):
+    def __init__(self, path: str):
+        super().__init__(
+            f"delta.enableChangeDataFeed not set to true for path `{path}`\n"
+            f"Enable by running 'ALTER TABLE delta.`{path}` SET TBLPROPERTIES (delta.enableChangeDataFeed = true)'"
+        )
+
+
 def read_change_feed(spark: SparkSession, path: str, **kwargs) -> DataFrame:
-    """Read changes from delta table or raise NoNewDataExcpetion if the timestamp is after the last written timestamp"""
+    """Read changes from delta table or raise NoNewDataExcpetion if the timestamp is after the last written timestamp
+
+    If the delta table doesn't have delta.enableChangeDataFeed set to true, raises ReadChangeFeedDisabled exception
+    """
+    if not DeltaTable.isDeltaTable(spark, path):
+        raise AnalysisException(f"'{path}' is not a Delta table.", None)
+    if not is_read_change_feed_enabled(spark, path):
+        raise ReadChangeFeedDisabled(path)
     try:
         return spark.read.load(path, format="delta", readChangeFeed=True, **kwargs)
     except AnalysisException as e:
@@ -38,6 +53,17 @@ def last_written_timestamp_for_delta_path(
         .orderBy(F.col("timestamp").desc())
         .select("timestamp")
         .first()["timestamp"]
+    )
+
+
+def is_read_change_feed_enabled(spark: SparkSession, path: str) -> bool:
+    return (
+        spark.sql(f"SHOW TBLPROPERTIES delta.`{path}`")
+        .where(
+            (F.col("key") == "delta.enableChangeDataFeed") & (F.col("value") == "true")
+        )
+        .count()
+        > 0
     )
 
 

@@ -9,6 +9,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Added
 - `delta_utils.core.spark_current_timestamp` function to return the spark server timestamp (resolves race conditions)
 
+### Changed
+- `delta_utils.core.read_change_feed` will check if delta.enableChangeDataFeed set to true, otherwise it
+raises `ReadChangeFeedDisabled` exception
+    - `delta_utils.utils.DeltaChanges` and `delta_utils.utils.NonDeltaLastWrittenTimestamp` will also raise this exception
+
 ## [0.0.1] - 2022-03-13
 ### Added
 - First working code

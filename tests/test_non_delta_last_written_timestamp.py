@@ -69,5 +69,7 @@ def test_wrong_name(spark, base_test_dir):
     append_data(spark, path, [("one", 1)])
 
     timestamps.read_changes("my-table", path)
-    with pytest.raises(ValueError, match="ERROR: read changes not called for wrong-table"):
+    with pytest.raises(
+        ValueError, match="ERROR: read changes not called for wrong-table"
+    ):
         timestamps.set_last_written_timestamp("wrong-table")

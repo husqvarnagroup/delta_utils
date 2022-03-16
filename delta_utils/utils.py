@@ -6,7 +6,12 @@ from delta import DeltaTable  # type: ignore
 from pyspark.sql import DataFrame, DataFrameWriter, SparkSession, functions as F
 from pyspark.sql.window import Window
 
-from .core import last_written_timestamp_for_delta_path, read_change_feed, spark_current_timestamp
+from .core import (
+    is_read_change_feed_enabled,
+    last_written_timestamp_for_delta_path,
+    read_change_feed,
+    spark_current_timestamp,
+)
 
 
 @dataclass
@@ -79,16 +84,7 @@ class DeltaChanges:
     def enable_change_feed(self):
         if not DeltaTable.isDeltaTable(self.spark, self.delta_path):
             return
-        delta_change_data_feed_disabled = (
-            self.spark.sql(f"SHOW TBLPROPERTIES delta.`{self.delta_path}`")
-            .where(
-                (F.col("key") == "delta.enableChangeDataFeed")
-                & (F.col("value") == "true")
-            )
-            .first()
-            is None
-        )
-        if delta_change_data_feed_disabled:
+        if not is_read_change_feed_enabled(self.spark, self.delta_path):
             self.spark.sql(
                 f"ALTER TABLE delta.`{self.delta_path}` SET TBLPROPERTIES (delta.enableChangeDataFeed = true)"
             )
