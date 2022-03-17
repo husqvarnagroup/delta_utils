@@ -1,6 +1,10 @@
 import pytest
 
-from delta_utils import NonDeltaLastWrittenTimestamp, NoNewDataException
+from delta_utils import (
+    NonDeltaLastWrittenTimestamp,
+    NoNewDataException,
+    ReadChangeFeedDisabled,
+)
 
 
 def create_table(spark, path: str):
@@ -73,3 +77,21 @@ def test_wrong_name(spark, base_test_dir):
         ValueError, match="ERROR: read changes not called for wrong-table"
     ):
         timestamps.set_last_written_timestamp("wrong-table")
+
+
+def test_raise_read_change_feed_disabled(spark, base_test_dir):
+    timestamp_path = f"{base_test_dir}timestamps"
+    timestamps = NonDeltaLastWrittenTimestamp(spark, timestamp_path)
+
+    path = f"{base_test_dir}trusted"
+    spark.sql(
+        f"""
+    CREATE TABLE delta.`{path}` (text string, number long)
+    USING delta
+    TBLPROPERTIES (delta.enableChangeDataFeed = false)
+    """
+    )
+    append_data(spark, path, [("one", 1)])
+
+    with pytest.raises(ReadChangeFeedDisabled):
+        timestamps.read_changes("my-table", path)

@@ -1,6 +1,9 @@
 from datetime import datetime
 
-from delta_utils import DeltaChanges
+import pytest
+from delta import DeltaTable  # type: ignore
+
+from delta_utils import DeltaChanges, ReadChangeFeedDisabled
 
 
 def setup_delta_table(spark, path: str) -> DeltaChanges:
@@ -127,3 +130,30 @@ def test_upsert_update_fields(spark, base_test_dir):
         ("tre", 3, datetime(2022, 2, 1)),
     ]
     assert result == output, result
+
+
+def test_raise_read_change_feed_disabled(spark, base_test_dir):
+    path_from = f"{base_test_dir}trusted1"
+    spark.sql(
+        f"""
+    CREATE TABLE delta.`{path_from}` (text string, number long)
+    USING delta
+    TBLPROPERTIES (delta.enableChangeDataFeed = false)
+    """
+    )
+    df = spark.createDataFrame([("one", 1), ("two", 2)], ("text", "number"))
+    dc_from = DeltaChanges(spark, path_from)
+    dc_from.upsert(df, join_fields=("number",))
+
+    path_to = f"{base_test_dir}trusted2"
+    dc_to = DeltaChanges(spark, path_to)
+
+    with pytest.raises(ReadChangeFeedDisabled):
+        dc_to.read_changes(path_from)
+
+
+def test_enable_change_feed_on_empty_path(spark, base_test_dir):
+    path = f"{base_test_dir}trusted"
+    dc = DeltaChanges(spark, path)
+    dc.enable_change_feed()
+    assert not DeltaTable.isDeltaTable(spark, path)

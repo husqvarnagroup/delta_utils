@@ -7,6 +7,7 @@ from pyspark.sql import DataFrame, DataFrameWriter, SparkSession, functions as F
 from pyspark.sql.window import Window
 
 from .core import (
+    ReadChangeFeedDisabled,
     is_read_change_feed_enabled,
     last_written_timestamp_for_delta_path,
     read_change_feed,
@@ -32,6 +33,8 @@ class DeltaChanges:
             self.last_written_timestamp = None
 
     def read_changes(self, path: str) -> DataFrame:
+        if not is_read_change_feed_enabled(self.spark, path):
+            raise ReadChangeFeedDisabled(path)
         if self.last_written_timestamp is not None:
             return read_change_feed(
                 self.spark, path, startingTimestamp=self.last_written_timestamp
@@ -133,6 +136,8 @@ class NonDeltaLastWrittenTimestamp:
             self.set_last_written_timestamp(name)
 
     def read_changes(self, name: str, path: str) -> DataFrame:
+        if not is_read_change_feed_enabled(self.spark, path):
+            raise ReadChangeFeedDisabled(path)
         last_written_timestamp = last_written_timestamp_for_delta_path(self.spark, path)
         now = spark_current_timestamp(self.spark)
         if last_written_timestamp:

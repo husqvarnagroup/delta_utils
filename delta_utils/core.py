@@ -47,16 +47,20 @@ def last_written_timestamp_for_delta_path(
     """Returns the last written timestamp for a delta table"""
     if not DeltaTable.isDeltaTable(spark, path):
         return None
-    return (
+    response = (
         spark.sql(f"DESCRIBE HISTORY delta.`{path}`")
         .where(F.col("operation").isin(["WRITE", "MERGE"]))
         .orderBy(F.col("timestamp").desc())
         .select("timestamp")
-        .first()["timestamp"]
+        .first()
     )
+    if not response:
+        return None
+    return response["timestamp"]
 
 
 def is_read_change_feed_enabled(spark: SparkSession, path: str) -> bool:
+    """Check if delta.enableChangeDataFeed is enabled"""
     return (
         spark.sql(f"SHOW TBLPROPERTIES delta.`{path}`")
         .where(
