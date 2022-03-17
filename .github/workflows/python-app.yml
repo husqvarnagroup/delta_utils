@@ -48,8 +48,6 @@ jobs:
     - name: Databricks connect test
       run: |
         docker-compose run pytest databricks-connect test
-      if: false # fails currently because of DATABRICKS_CONNECT secret missing
     - name: Test
       run: |
         docker-compose run pytest
-      if: false # fails currently because of DATABRICKS_CONNECT secret missing

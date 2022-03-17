@@ -29,6 +29,7 @@ def append_data(spark, path: str, data: list):
 
 def test_last_version(spark, base_test_dir):
     path = f"{base_test_dir}trusted"
+    assert last_written_timestamp_for_delta_path(spark, path) is None
     append_data(spark, path, [("one", 1)])
     last_timestamp = last_written_timestamp_for_delta_path(spark, path)
     df = read_change_feed(spark, path, startingTimestamp=last_timestamp)
