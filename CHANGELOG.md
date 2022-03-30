@@ -8,6 +8,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 ### Added
 - `delta_utils.core.spark_current_timestamp` function to return the spark server timestamp (resolves race conditions)
+- `delta_utils.fileregistry.S3FullScan` class to scan S3 bucket + prefix and suffix, this will keep you from loading processed files
 
 ### Changed
 - `delta_utils.core.read_change_feed` will check if delta.enableChangeDataFeed set to true, otherwise it

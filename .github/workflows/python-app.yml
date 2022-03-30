@@ -45,6 +45,9 @@ jobs:
         echo "$DATABRICKS_CONNECT" > .databricks-connect
         echo "TEST_DIR=$TEST_DIR" > .env
         docker-compose build pytest
+    - name: Pip list
+      run: |
+        docker-compose run pytest python -m pip list
     - name: Databricks connect test
       run: |
         docker-compose run pytest databricks-connect test
