@@ -6,6 +6,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 
 ## [Unreleased]
+
+## [0.1.1] - 2022-03-31
 ### Added
 - `delta_utils.fileregistry.S3FullScan.remove_file_paths` to delete rows in the File Registry
 
@@ -28,5 +30,6 @@ raises `ReadChangeFeedDisabled` exception
 - Tests
 - Documentation
 
-[Unreleased]: https://github.com/bulv1ne/delta_utilscompare/v0.1.0...HEAD
+[Unreleased]: https://github.com/bulv1ne/delta_utilscompare/v0.1.1...HEAD
+[0.1.1]: https://github.com/bulv1ne/delta_utilscompare/v0.1.0...v0.1.1
 [0.1.0]: https://github.com/bulv1ne/delta_utilscompare/v0.0.1...v0.1.0
