@@ -109,7 +109,7 @@ def test_update_fileregistry_single(spark, base_test_dir, mocked_s3_bucket_name)
         (None, datetime(2021, 11, 19, 10, 0), {1, 2, 3, 4}),
     ],
 )
-def test_clear_fileregistry_all(
+def test_clear_dates_fileregistry_all(
     start, stop, expected_null_file_numbers, spark, base_test_dir
 ):
     expected_null_files = {
@@ -133,7 +133,7 @@ def test_clear_fileregistry_all(
     df.write.save(file_registry.file_registry_path, format="delta", mode="append")
 
     # ACT
-    file_registry.clear(start, stop)
+    file_registry.clear_dates(start, stop)
 
     # ASSERT
     df_res = spark.read.load(file_registry.file_registry_path).where(
@@ -142,3 +142,47 @@ def test_clear_fileregistry_all(
 
     result = {row.file_path for row in df_res.collect()}
     assert result == expected_null_files
+
+
+@pytest.mark.parametrize(
+    "file_numbers_to_delete, expected_file_numbers_left",
+    [
+        (None, set()),  # Remove all
+        ([], {1, 2, 3, 4}),  # Remove none
+        ([1, 2], {3, 4}),  # Remove specific
+    ],
+)
+def test_remove_fileregistry(
+    file_numbers_to_delete, expected_file_numbers_left, spark, base_test_dir
+):
+    if file_numbers_to_delete is None:
+        files_to_remove = None
+    else:
+        files_to_remove = {
+            f"s3://mybucket/raw/file{i}.json" for i in file_numbers_to_delete
+        }
+    expected_files_left = {
+        f"s3://mybucket/raw/file{i}.json" for i in expected_file_numbers_left
+    }
+    # ARRANGE
+    file_registry = S3FullScan(f"{base_test_dir}fileregistry", spark)
+
+    df = spark.createDataFrame(
+        [
+            ("s3://mybucket/raw/file1.json", None),
+            ("s3://mybucket/raw/file2.json", datetime(2021, 11, 18)),
+            ("s3://mybucket/raw/file3.json", datetime(2021, 11, 19, 8, 0)),
+            ("s3://mybucket/raw/file4.json", datetime(2021, 11, 19, 10, 0)),
+        ],
+        ["file_path", "date_lifted"],
+    )
+    df.write.save(file_registry.file_registry_path, format="delta", mode="append")
+
+    # ACT
+    file_registry.remove_file_paths(files_to_remove)
+
+    # ASSERT
+    df_res = spark.read.load(file_registry.file_registry_path)
+
+    result = {row.file_path for row in df_res.collect()}
+    assert result == expected_files_left

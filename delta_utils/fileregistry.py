@@ -59,11 +59,15 @@ class S3FullScan:
 
         return list_of_paths
 
-    def clear(
+    def clear_dates(
         self,
         start: Optional[datetime] = None,
         stop: Optional[datetime] = None,
     ) -> None:
+        """Marks the files between start and stop to be relifted.
+
+        This sets the date_lifted to NULL.
+        """
         sql_statement = [
             f"UPDATE delta.`{self.file_registry_path}`",
             "SET date_lifted = NULL",
@@ -77,6 +81,21 @@ class S3FullScan:
         if conditions:
             sql_statement.append("WHERE")
             sql_statement.append(" AND ".join(conditions))
+
+        self.spark.sql(" ".join(sql_statement))
+
+    def remove_file_paths(self, file_paths: Optional[List[str]] = None):
+        sql_statement = [
+            f"DELETE FROM delta.`{self.file_registry_path}`",
+        ]
+
+        if file_paths is not None:
+            conditions = [f"file_path = '{file_path}'" for file_path in file_paths]
+            if conditions:
+                sql_statement.append("WHERE")
+                sql_statement.append(" OR ".join(conditions))
+            else:  # file_paths was empty, so don't delete anything
+                return
 
         self.spark.sql(" ".join(sql_statement))
 

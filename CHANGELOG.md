@@ -6,6 +6,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 
 ## [Unreleased]
+### Added
+- `delta_utils.fileregistry.S3FullScan.remove_file_paths` to delete rows in the File Registry
+
+### Changed
+- `delta_utils.fileregistry.S3FullScan.clear` is renamed to `clear_dates`
 
 ## [0.1.0] - 2022-03-30
 ### Added
