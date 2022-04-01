@@ -1,0 +1,40 @@
+# This workflow will install Python dependencies, run tests and lint with a single version of Python
+# For more information see: https://help.github.com/actions/language-and-framework-guides/using-python-with-github-actions
+
+name: Bump version
+
+on:
+  workflow_dispatch:
+    inputs:
+      versionPart:
+        description: 'Version bump part'
+        required: true
+        default: patch
+        type: choice
+        options:
+        - patch
+        - minor
+        - major
+
+jobs:
+  deploy:
+    name: Bump version release branch
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v3
+    - name: Set up Python
+      uses: actions/setup-python@v3
+    - name: Install dependencies
+      run: |
+        python -m pip install --upgrade pip pipx
+    - name: setup git config
+      run: |
+        git config user.name "GitHub Actions Bot"
+        git config user.email "<>"
+        git checkout -b release
+    - name: Bumpversion
+      run: |
+        pipx run --spec git+https://github.com/bulv1ne/poetry-bumpversion poetry-bumpversion ${{ github.event.inputs.versionPart }}
+    - name: Git push
+      run: |
+        git push origin release
