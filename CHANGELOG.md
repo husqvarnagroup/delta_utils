@@ -6,6 +6,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 
 ## [Unreleased]
+
+## [0.2.0] - 2022-04-20
 ### Fixed
 - Force readthedocs to use mkdocs>=1.3.0
 
@@ -32,6 +34,7 @@ raises `ReadChangeFeedDisabled` exception
 - Tests
 - Documentation
 
-[Unreleased]: https://github.com/bulv1ne/delta_utilscompare/v0.1.1...HEAD
+[Unreleased]: https://github.com/bulv1ne/delta_utilscompare/v0.2.0...HEAD
+[0.2.0]: https://github.com/bulv1ne/delta_utilscompare/v0.1.1...v0.2.0
 [0.1.1]: https://github.com/bulv1ne/delta_utilscompare/v0.1.0...v0.1.1
 [0.1.0]: https://github.com/bulv1ne/delta_utilscompare/v0.0.1...v0.1.0
