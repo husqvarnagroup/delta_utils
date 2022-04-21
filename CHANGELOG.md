@@ -6,6 +6,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 
 ## [Unreleased]
+### Added
+- Github Action changelog.yml to check if the CHANGELOG.md file is being changed in the pull request
 
 ## [0.2.1] - 2022-04-21
 ### Added
