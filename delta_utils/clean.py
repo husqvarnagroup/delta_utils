@@ -14,18 +14,11 @@ def replace_invalid_column_char(col_name: str, replacer: str = "_") -> str:
     )
 
 
-def surround_field(name: str) -> str:
-    if re.search(invalid_chars, name):
-        return f"`{name}`"
-
-    return name
-
-
 def flatten_schema(schema: T.StructType, prefix: str = None) -> List[str]:
     fields = []
 
     for field in schema.fields:
-        field_name = surround_field(field.name)
+        field_name = f"`{field.name}`"
         name = prefix + "." + field_name if prefix else field_name
         dtype = field.dataType
 

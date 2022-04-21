@@ -90,7 +90,7 @@ def test_flatten_table(spark):
                     [
                         T.StructField("first name", T.StringType(), True),
                         T.StructField("id", T.StringType(), True),
-                        T.StructField("ID", T.StringType(), True),
+                        T.StructField("@ID", T.StringType(), True),
                         T.StructField("last,name", T.StringType(), True),
                         T.StructField("lastname.test", T.StringType(), True),
                         T.StructField(
@@ -143,7 +143,7 @@ def test_flatten_table(spark):
     assert columns == [
         "name_first name",
         "name_id",
-        "name_ID",
+        "name_@ID",
         "name_last,name",
         "name_lastname_test",
         "name_nested_test sfd",
@@ -188,6 +188,6 @@ def test_flatten_table_raise_error(spark):
 
     with pytest.raises(
         ValueError,
-        match="Could not rename column name.id to name_id, because name_id already exists",
+        match="Could not rename column `name`.`id` to name_id, because name_id already exists",
     ):
         flatten(df)

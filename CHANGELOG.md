@@ -6,6 +6,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 
 ## [Unreleased]
+### Added
+- `delta_utils.clean.flatten` to flatten dataframe
+- `delta_utils.clean.fix_invalid_column_names` to remove invalid char in column names
 
 ## [0.2.0] - 2022-04-20
 ### Fixed
