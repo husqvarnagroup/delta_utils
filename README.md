@@ -3,7 +3,7 @@
 ## Installation
 
 ```bash
-pip install git+https://github.com/bulv1ne/delta_utils.git
+pip install git+https://github.com/husqvarnagroup/delta_utils.git
 ```
 
 ### Installation on a cluster in Databricks
@@ -12,7 +12,7 @@ pip install git+https://github.com/bulv1ne/delta_utils.git
 - Go to Libraries
 - Click Install new
 - Select PyPI
-- As the package, enter "git+https://github.com/bulv1ne/delta_utils.git"
+- As the package, enter "git+https://github.com/husqvarnagroup/delta_utils.git"
 - Press Install
 
 ## Databricks connect setup
