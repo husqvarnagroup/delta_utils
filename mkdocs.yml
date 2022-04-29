@@ -1,7 +1,7 @@
 site_name: Delta Utils
 theme:
     name: material
-repo_url: https://github.com/bulv1ne/delta_utils
+repo_url: https://github.com/husqvarnagroup/delta_utils
 docs_dir: docs
 nav:
     - Home: 'README.md'
@@ -9,7 +9,7 @@ nav:
       - 'usage.md'
       - 'clean.md'
     - 'About':
-          - Issue Tracker: 'https://github.com/bulv1ne/delta_utils/issues'
+          - Issue Tracker: 'https://github.com/husqvarnagroup/delta_utils/issues'
           - 'CHANGELOG.md'
           - License: 'LICENSE.md'
 plugins:
