@@ -84,7 +84,7 @@ def fix_invalid_column_names(df: DataFrame) -> DataFrame:
     return df.selectExpr([f"`{k}` as `{v}`" for k, v in new_fields])
 
 
-def flatten(df: DataFrame) -> DataFrame:
+def flatten(df: DataFrame, nested_names=True) -> DataFrame:
     """
     Will take a nested dataframe and flatten it out.
 
@@ -96,7 +96,11 @@ def flatten(df: DataFrame) -> DataFrame:
 
     """
     fields = rename_flatten_schema(flatten_schema(df.schema))
-    fields = [f"{k} as `{v}`" for k, v in fields]
+
+    if nested_names:
+        fields = [f"{k} as `{v}`" for k, v in fields]
+    else:
+        fields = [f"{k}" for k, v in fields]
 
     df = df.selectExpr(*fields)
     check_duplicates(df.columns, "Found duplicates columns when flattening")
