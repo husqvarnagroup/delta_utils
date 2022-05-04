@@ -191,3 +191,76 @@ def test_flatten_table_raise_error(spark):
         match="Could not rename column `name`.`id` to name_id, because name_id already exists",
     ):
         flatten(df)
+
+
+def test_flatten_table_no_nested_names(spark):
+    spark.conf.set("spark.sql.caseSensitive", "true")
+
+    schema = T.StructType(
+        [
+            T.StructField(
+                "name",
+                T.StructType(
+                    [
+                        T.StructField("first name", T.StringType(), True),
+                        T.StructField("id", T.StringType(), True),
+                        T.StructField("@ID", T.StringType(), True),
+                        T.StructField("last,name", T.StringType(), True),
+                        T.StructField("lastname.test", T.StringType(), True),
+                        T.StructField(
+                            "nested",
+                            T.StructType(
+                                [T.StructField("test sfd", T.StringType(), True)]
+                            ),
+                            True,
+                        ),
+                    ]
+                ),
+            ),
+            T.StructField(
+                "items",
+                T.ArrayType(
+                    T.StructType([T.StructField("swo:rd", T.BooleanType(), True)])
+                ),
+            ),
+            T.StructField("dupli,cate", T.StringType(), True),
+            T.StructField("dupli;cate", T.StringType(), True),
+            T.StructField("ge n(de-r", T.StringType(), True),
+            T.StructField("sa;lar)y", T.IntegerType(), True),
+        ]
+    )
+
+    data = [
+        (
+            ("Linus", "123", "456", "Wallin", "W2", ("asd",)),
+            [(True,)],
+            "asd",
+            "asd2",
+            "Unknown",
+            4,
+        ),
+        (
+            ("Niels", "123", "768", "Lemmens", "L2", ("asd",)),
+            [(True,)],
+            "asd",
+            "asd2",
+            "Man",
+            3,
+        ),
+    ]
+
+    df = spark.createDataFrame(data, schema)
+    columns = flatten(df, nested_names=False).columns
+    assert columns == [
+        "first name",
+        "id",
+        "@ID",
+        "last,name",
+        "lastname.test",
+        "test sfd",
+        "items",
+        "dupli,cate",
+        "dupli;cate",
+        "ge n(de-r",
+        "sa;lar)y",
+    ]
