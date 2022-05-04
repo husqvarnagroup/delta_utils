@@ -90,6 +90,7 @@ def flatten(df: DataFrame, nested_names=True) -> DataFrame:
 
     Args:
         df (DataFrame): The dataframe you want to flatten
+        nested_names (bool): If you want nested names or not
 
     Returns:
         DataFrame: Returns a flatter dataframe
