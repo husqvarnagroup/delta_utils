@@ -14,7 +14,7 @@ boto3 = "*"
 
 [tool.poetry.dev-dependencies]
 mkdocs-material = "^8.2.9"
-mkdocstrings-python = "^0.6.6"
+mkdocstrings-python = "^0.7.1"
 black = "*"
 isort = "*"
 flake8 = "*"
