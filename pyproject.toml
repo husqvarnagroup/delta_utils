@@ -22,7 +22,7 @@ mypy = "*"
 pre-commit = "*"
 pytest = "*"
 pytest-cov = "*"
-databricks-connect = "9.1.*"
+databricks-connect = "10.4.*"
 mkdocs = "*"
 moto = {extras = ["s3"], version = "*"}
 boto3-stubs = {extras = ["s3"], version = "*"}
