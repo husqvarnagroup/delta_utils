@@ -1,4 +1,8 @@
-"""File registry that works with a prefix in S3."""
+"""File registry that works with a prefix in S3.
+
+This feature is deprecated. Databricks Unity Catalog disables s3 access, we recommend you to use
+(Databricks Auto Loader)[https://docs.databricks.com/ingestion/auto-loader/options.html] instead
+"""
 import uuid
 from contextlib import contextmanager
 from dataclasses import dataclass
@@ -32,7 +36,7 @@ class S3FullScan:
             ]
         )
 
-    def update(self, paths: List[str] = None) -> None:
+    def update(self, paths: Optional[List[str]] = None) -> None:
         """Update file registry column date_lifted to current timestamp."""
         if paths:
             statement = F.col("file_path").isin(paths)

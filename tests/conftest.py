@@ -9,6 +9,9 @@ from pyspark.dbutils import DBUtils
 from pyspark.sql import SparkSession
 
 base_dir = os.getenv("TEST_DIR")
+assert base_dir, "You need to set the TEST_DIR environmental variable"
+
+assert os.getenv("TZ") == "UTC", "Environmental variable 'TZ' must be set to 'UTC'"
 
 
 @pytest.fixture(scope="session")
