@@ -7,20 +7,12 @@ from delta_utils import (
 )
 
 
-def create_table(spark, path: str):
-    spark.sql(
-        f"""
-    CREATE TABLE IF NOT EXISTS delta.`{path}` (text string, number long)
-    USING delta
-    TBLPROPERTIES (delta.enableChangeDataFeed = true)
-    """
-    )
-
-
 def append_data(spark, path: str, data: list):
-    create_table(spark, path)
     df = spark.createDataFrame(data, ("text", "number"))
     df.write.save(path, format="delta", mode="append")
+    spark.sql(
+        f"ALTER TABLE delta.`{path}` SET TBLPROPERTIES (delta.enableChangeDataFeed = true)"
+    )
 
 
 def test_non_delta_last_written_timestamp(spark, base_test_dir):
@@ -84,14 +76,11 @@ def test_raise_read_change_feed_disabled(spark, base_test_dir):
     timestamps = NonDeltaLastWrittenTimestamp(spark, timestamp_path)
 
     path = f"{base_test_dir}trusted"
-    spark.sql(
-        f"""
-    CREATE TABLE delta.`{path}` (text string, number long)
-    USING delta
-    TBLPROPERTIES (delta.enableChangeDataFeed = false)
-    """
-    )
+
     append_data(spark, path, [("one", 1)])
+    spark.sql(
+        f"ALTER TABLE delta.`{path}` SET TBLPROPERTIES (delta.enableChangeDataFeed = false)"
+    )
 
     with pytest.raises(ReadChangeFeedDisabled):
         timestamps.read_changes("my-table", path)

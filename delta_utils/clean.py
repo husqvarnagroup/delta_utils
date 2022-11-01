@@ -1,6 +1,6 @@
 import re
 from collections import Counter
-from typing import List
+from typing import List, Optional
 
 from pyspark.sql import types as T
 from pyspark.sql.dataframe import DataFrame
@@ -14,7 +14,7 @@ def replace_invalid_column_char(col_name: str, replacer: str = "_") -> str:
     )
 
 
-def flatten_schema(schema: T.StructType, prefix: str = None) -> List[str]:
+def flatten_schema(schema: T.StructType, prefix: Optional[str] = None) -> List[str]:
     fields = []
 
     for field in schema.fields:

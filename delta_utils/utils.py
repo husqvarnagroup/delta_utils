@@ -3,15 +3,31 @@ from datetime import datetime, timedelta
 from typing import Optional, Tuple, Union
 
 from delta import DeltaTable  # type: ignore
-from pyspark.sql import DataFrame, DataFrameWriter, SparkSession, functions as F
+from pyspark.sql import (
+    DataFrame,
+    DataFrameWriter,
+    SparkSession,
+    functions as F,
+    types as T,
+)
+from pyspark.sql.utils import AnalysisException
 from pyspark.sql.window import Window
 
 from .core import (
     ReadChangeFeedDisabled,
+    is_path,
     is_read_change_feed_enabled,
     last_written_timestamp_for_delta_path,
     read_change_feed,
     spark_current_timestamp,
+    table_from_path,
+)
+
+NON_DELTA_LAST_WRITTEN_TIMESTAMP_SCHEMA = T.StructType(
+    [
+        T.StructField("name", T.StringType()),
+        T.StructField("last_written_timestamp", T.TimestampType()),
+    ]
 )
 
 
@@ -25,7 +41,9 @@ class DeltaChanges:
         self._update_last_written_timestamp()
 
     def _update_last_written_timestamp(self):
-        if DeltaTable.isDeltaTable(self.spark, self.delta_path):
+        if not is_path(self.delta_path) or DeltaTable.isDeltaTable(
+            self.spark, self.delta_path
+        ):
             self.last_written_timestamp = last_written_timestamp_for_delta_path(
                 self.spark, self.delta_path
             )
@@ -40,7 +58,7 @@ class DeltaChanges:
                 self.spark, path, startingTimestamp=self.last_written_timestamp
             )
         return (
-            self.spark.read.load(path, format="delta")
+            self.spark.read.table(table_from_path(path))
             .withColumn("_change_type", F.lit("insert"))
             .withColumn("_commit_version", F.lit(0))
             .withColumn("_commit_timestamp", F.lit(datetime(1970, 1, 1)))
@@ -85,11 +103,14 @@ class DeltaChanges:
         self.spark.catalog.dropTempView("tmptable")
 
     def enable_change_feed(self):
-        if not DeltaTable.isDeltaTable(self.spark, self.delta_path):
+        if is_path(self.delta_path) and not DeltaTable.isDeltaTable(
+            self.spark, self.delta_path
+        ):
             return
         if not is_read_change_feed_enabled(self.spark, self.delta_path):
+            table = table_from_path(self.delta_path)
             self.spark.sql(
-                f"ALTER TABLE delta.`{self.delta_path}` SET TBLPROPERTIES (delta.enableChangeDataFeed = true)"
+                f"ALTER TABLE {table} SET TBLPROPERTIES (delta.enableChangeDataFeed = true)"
             )
 
 
@@ -100,13 +121,16 @@ class NonDeltaLastWrittenTimestamp:
     read_changes_times: dict = field(init=False)
 
     def __post_init__(self):
-        self.spark.sql(
-            f"""
-        CREATE TABLE IF NOT EXISTS delta.`{self.path}`
-        (name STRING, last_written_timestamp TIMESTAMP)
-        USING delta
-        """
-        )
+        try:
+            self.spark.read.load(self.path, format="delta")
+        except AnalysisException as e:
+            if "is not a delta table" not in str(e).lower():
+                raise
+            self.spark.createDataFrame(
+                [],
+                schema=NON_DELTA_LAST_WRITTEN_TIMESTAMP_SCHEMA,
+            ).write.save(self.path, format="delta")
+
         self.read_changes_times = {}
 
     def get_last_written_timestamp(self, name) -> Optional[datetime]:
@@ -127,7 +151,8 @@ class NonDeltaLastWrittenTimestamp:
             raise ValueError(f"ERROR: read changes not called for {name}")
         (
             self.spark.createDataFrame(
-                [(name, last_written_timestamp)], ("name", "last_written_timestamp")
+                [(name, last_written_timestamp)],
+                schema=NON_DELTA_LAST_WRITTEN_TIMESTAMP_SCHEMA,
             ).write.save(self.path, format="delta", mode="append")
         )
 
@@ -150,8 +175,9 @@ class NonDeltaLastWrittenTimestamp:
             return read_change_feed(
                 self.spark, path, startingTimestamp=last_written_timestamp
             )
+        table = table_from_path(path)
         return (
-            self.spark.read.load(path, format="delta")
+            self.spark.read.table(table)
             .withColumn("_change_type", F.lit("insert"))
             .withColumn("_commit_version", F.lit(0))
             .withColumn("_commit_timestamp", F.lit(datetime(1970, 1, 1)))

@@ -134,13 +134,13 @@ def test_upsert_update_fields(spark, base_test_dir):
 
 def test_raise_read_change_feed_disabled(spark, base_test_dir):
     path_from = f"{base_test_dir}trusted1"
-    spark.sql(
-        f"""
-    CREATE TABLE delta.`{path_from}` (text string, number long)
-    USING delta
-    TBLPROPERTIES (delta.enableChangeDataFeed = false)
-    """
+    spark.createDataFrame([("one", 1)], ("text", "number")).write.save(
+        path_from, format="delta"
     )
+    spark.sql(
+        f"ALTER TABLE delta.`{path_from}` SET TBLPROPERTIES (delta.enableChangeDataFeed = false)"
+    )
+
     df = spark.createDataFrame([("one", 1), ("two", 2)], ("text", "number"))
     dc_from = DeltaChanges(spark, path_from)
     dc_from.upsert(df, join_fields=("number",))

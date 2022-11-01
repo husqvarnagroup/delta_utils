@@ -6,6 +6,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 
 ## [Unreleased]
+### Changed
+- Fileregistry is deprecated, with Unity Catalog S3 works entirely different and boto3 is not possible
+- DeltaChanges work with Unity Catalog table names
 
 ## [0.3.0] - 2022-05-04
 ### Added

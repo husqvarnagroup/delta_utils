@@ -23,12 +23,19 @@ def read_change_feed(spark: SparkSession, path: str, **kwargs) -> DataFrame:
 
     If the delta table doesn't have delta.enableChangeDataFeed set to true, raises ReadChangeFeedDisabled exception
     """
-    if not DeltaTable.isDeltaTable(spark, path):
+    if is_path(path) and not DeltaTable.isDeltaTable(spark, path):
         raise AnalysisException(f"'{path}' is not a Delta table.", None)
     if not is_read_change_feed_enabled(spark, path):
         raise ReadChangeFeedDisabled(path)
+    table = table_from_path(path)
     try:
-        return spark.read.load(path, format="delta", readChangeFeed=True, **kwargs)
+        spark_option = spark.read.option("readChangeFeed", True)
+        for key, value in kwargs.items():
+            spark_option = spark_option.option(key, value)
+        dataframe = spark_option.table(table)
+        if dataframe.first() is None:
+            raise NoNewDataException()
+        return dataframe
     except AnalysisException as e:
         error_msg = str(e)
         print(error_msg)
@@ -45,11 +52,12 @@ def last_written_timestamp_for_delta_path(
     spark: SparkSession, path: str
 ) -> Optional[datetime]:
     """Returns the last written timestamp for a delta table"""
-    if not DeltaTable.isDeltaTable(spark, path):
+    if is_path(path) and not DeltaTable.isDeltaTable(spark, path):
         return None
+    table = table_from_path(path)
     response = (
-        spark.sql(f"DESCRIBE HISTORY delta.`{path}`")
-        .where(F.col("operation").isin(["WRITE", "MERGE"]))
+        spark.sql(f"DESCRIBE HISTORY {table}")
+        .where(F.col("operation").isin(["WRITE", "MERGE", "CREATE TABLE AS SELECT"]))
         .orderBy(F.col("timestamp").desc())
         .select("timestamp")
         .first()
@@ -59,10 +67,23 @@ def last_written_timestamp_for_delta_path(
     return response["timestamp"]
 
 
+def is_path(path):
+    return path.startswith("/") or path.startswith("s3://")
+
+
+def table_from_path(path: str):
+    """Returns a table name from a path"""
+    if is_path(path):
+        return f"delta.`{path}`"
+    # The path is most likely already a table
+    return path
+
+
 def is_read_change_feed_enabled(spark: SparkSession, path: str) -> bool:
     """Check if delta.enableChangeDataFeed is enabled"""
+    table = table_from_path(path)
     return (
-        spark.sql(f"SHOW TBLPROPERTIES delta.`{path}`")
+        spark.sql(f"SHOW TBLPROPERTIES {table}")
         .where(
             (F.col("key") == "delta.enableChangeDataFeed") & (F.col("value") == "true")
         )

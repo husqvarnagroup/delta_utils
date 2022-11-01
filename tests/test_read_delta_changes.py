@@ -11,38 +11,12 @@ from delta_utils import (
 )
 
 
-def create_table(spark, path: str):
-    spark.sql(
-        f"""
-    CREATE TABLE IF NOT EXISTS delta.`{path}` (text string, number long)
-    USING delta
-    TBLPROPERTIES (delta.enableChangeDataFeed = true)
-    """
-    )
-
-
 def append_data(spark, path: str, data: list):
-    create_table(spark, path)
     df = spark.createDataFrame(data, ("text", "number"))
     df.write.save(path, format="delta", mode="append")
-
-
-def test_last_version(spark, base_test_dir):
-    path = f"{base_test_dir}trusted"
-    assert last_written_timestamp_for_delta_path(spark, path) is None
-    append_data(spark, path, [("one", 1)])
-    last_timestamp = last_written_timestamp_for_delta_path(spark, path)
-    df = read_change_feed(spark, path, startingTimestamp=last_timestamp)
-    assert df.columns == [
-        "text",
-        "number",
-        "_change_type",
-        "_commit_version",
-        "_commit_timestamp",
-    ]
-    result = [tuple(row) for row in df.select("text", "number").collect()]
-    output = [("one", 1)]
-    assert result == output, result
+    spark.sql(
+        f"ALTER TABLE delta.`{path}` SET TBLPROPERTIES (delta.enableChangeDataFeed = true)"
+    )
 
 
 def test_new_version(spark, base_test_dir):
@@ -83,13 +57,10 @@ def test_raise_analysis_exception(spark, base_test_dir):
 
 def test_raise_read_change_feed_disabled(spark, base_test_dir):
     path = f"{base_test_dir}trusted"
-    spark.sql(
-        f"""
-    CREATE TABLE delta.`{path}` (text string, number long)
-    USING delta
-    TBLPROPERTIES (delta.enableChangeDataFeed = false)
-    """
-    )
     append_data(spark, path, [("one", 1)])
+    spark.sql(
+        f"ALTER TABLE delta.`{path}` SET TBLPROPERTIES (delta.enableChangeDataFeed = false)"
+    )
+
     with pytest.raises(ReadChangeFeedDisabled):
         read_change_feed(spark, path, startingVersion=1)
