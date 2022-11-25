@@ -18,4 +18,4 @@ jobs:
     name: Version bump on release branch
     uses: bulv1ne/poetry-bumpversion/.github/workflows/version-bump.yml@main
     with:
-      versionPart: ${{ inputs.versionPart }
+      versionPart: ${{ inputs.versionPart }}
