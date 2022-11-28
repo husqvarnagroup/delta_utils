@@ -6,6 +6,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 
 ## [Unreleased]
+
+## [0.4.0] - 2022-11-25
 ### Changed
 - Fileregistry is deprecated, with Unity Catalog S3 works entirely different and boto3 is not possible
 - DeltaChanges work with Unity Catalog table names
@@ -47,7 +49,8 @@ raises `ReadChangeFeedDisabled` exception
 - Tests
 - Documentation
 
-[Unreleased]: https://github.com/husqvarnagroup/delta_utils/compare/v0.3.0...HEAD
+[Unreleased]: https://github.com/husqvarnagroup/delta_utils/compare/v0.4.0...HEAD
+[0.4.0]: https://github.com/husqvarnagroup/delta_utils/compare/v0.3.0...v0.4.0
 [0.3.0]: https://github.com/husqvarnagroup/delta_utils/compare/v0.2.1...v0.3.0
 [0.2.1]: https://github.com/husqvarnagroup/delta_utils/compare/v0.2.0...v0.2.1
 [0.2.0]: https://github.com/husqvarnagroup/delta_utils/compare/v0.1.1...v0.2.0
