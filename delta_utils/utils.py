@@ -48,6 +48,10 @@ class DeltaChanges:
                 self.spark, self.delta_path
             )
         else:
+            print(
+                f"WARNING: {self.delta_path} does not seem to be a delta table, "
+                "spark will read all data instead of only the changes"
+            )
             self.last_written_timestamp = None
 
     def read_changes(self, path: str) -> DataFrame:
