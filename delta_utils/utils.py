@@ -103,10 +103,6 @@ class DeltaChanges:
         self.spark.catalog.dropTempView("tmptable")
 
     def enable_change_feed(self):
-        if is_path(self.delta_path) and not DeltaTable.isDeltaTable(
-            self.spark, self.delta_path
-        ):
-            return
         if not is_read_change_feed_enabled(self.spark, self.delta_path):
             table = table_from_path(self.delta_path)
             self.spark.sql(
