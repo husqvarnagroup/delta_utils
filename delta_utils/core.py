@@ -52,16 +52,18 @@ def last_written_timestamp_for_delta_path(
     spark: SparkSession, path: str
 ) -> Optional[datetime]:
     """Returns the last written timestamp for a delta table"""
-    if is_path(path) and not DeltaTable.isDeltaTable(spark, path):
-        return None
     table = table_from_path(path)
-    response = (
-        spark.sql(f"DESCRIBE HISTORY {table}")
-        .where(F.col("operation").isin(["WRITE", "MERGE", "CREATE TABLE AS SELECT"]))
-        .orderBy(F.col("timestamp").desc())
-        .select("timestamp")
-        .first()
-    )
+    try:
+        response = (
+            spark.sql(f"DESCRIBE HISTORY {table}")
+            .where(F.col("operation").isin(["WRITE", "MERGE", "CREATE TABLE AS SELECT"]))
+            .orderBy(F.col("timestamp").desc())
+            .select("timestamp")
+            .first()
+        )
+    except AnalysisException as e:
+        print(f"AnalysisException: {e}")
+        return None
     if not response:
         return None
     return response["timestamp"]

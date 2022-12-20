@@ -41,18 +41,14 @@ class DeltaChanges:
         self._update_last_written_timestamp()
 
     def _update_last_written_timestamp(self):
-        if not is_path(self.delta_path) or DeltaTable.isDeltaTable(
+        self.last_written_timestamp = last_written_timestamp_for_delta_path(
             self.spark, self.delta_path
-        ):
-            self.last_written_timestamp = last_written_timestamp_for_delta_path(
-                self.spark, self.delta_path
-            )
-        else:
+        )
+        if self.last_written_timestamp is None:
             print(
                 f"WARNING: {self.delta_path} does not seem to be a delta table, "
                 "spark will read all data instead of only the changes"
             )
-            self.last_written_timestamp = None
 
     def read_changes(self, path: str) -> DataFrame:
         if not is_read_change_feed_enabled(self.spark, path):

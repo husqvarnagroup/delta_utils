@@ -8,6 +8,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 ### Added
 - Warning message when initializing a DeltaChanges class when the table is not a delta table
+### Fixed
+- DeltaTable.isDeltaTable doesn't seem to work with Unity Catalog, 
+  the function `delta_utils.core.last_written_timestamp_for_delta_path` will now try to get the last timestamp 
+  regardless if the dataset exists or is a delta table, it will return `None` and print an error message
+  if it couldn't get the last timestamp
 
 ## [0.4.0] - 2022-11-25
 ### Changed
