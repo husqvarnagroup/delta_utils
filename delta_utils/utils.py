@@ -124,7 +124,13 @@ class NonDeltaLastWrittenTimestamp:
         try:
             self.spark.read.load(self.path, format="delta")
         except AnalysisException as e:
-            if "is not a delta table" not in str(e).lower():
+            error_msg = str(e).lower()
+            if all(
+                [
+                    "is not a delta table" not in error_msg,
+                    "path does not exist" not in error_msg,
+                ]
+            ):
                 raise
             self.spark.createDataFrame(
                 [],

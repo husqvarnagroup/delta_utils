@@ -56,7 +56,9 @@ def last_written_timestamp_for_delta_path(
     try:
         response = (
             spark.sql(f"DESCRIBE HISTORY {table}")
-            .where(F.col("operation").isin(["WRITE", "MERGE", "CREATE TABLE AS SELECT"]))
+            .where(
+                F.col("operation").isin(["WRITE", "MERGE", "CREATE TABLE AS SELECT"])
+            )
             .orderBy(F.col("timestamp").desc())
             .select("timestamp")
             .first()
