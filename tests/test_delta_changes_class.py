@@ -1,7 +1,6 @@
 from datetime import datetime
 
 import pytest
-from delta import DeltaTable  # type: ignore
 
 from delta_utils import DeltaChanges, ReadChangeFeedDisabled
 
@@ -150,10 +149,3 @@ def test_raise_read_change_feed_disabled(spark, base_test_dir):
 
     with pytest.raises(ReadChangeFeedDisabled):
         dc_to.read_changes(path_from)
-
-
-def test_enable_change_feed_on_empty_path(spark, base_test_dir):
-    path = f"{base_test_dir}trusted"
-    dc = DeltaChanges(spark, path)
-    dc.enable_change_feed()
-    assert not DeltaTable.isDeltaTable(spark, path)
