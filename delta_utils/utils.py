@@ -15,7 +15,6 @@ from pyspark.sql.window import Window
 
 from .core import (
     ReadChangeFeedDisabled,
-    is_path,
     is_read_change_feed_enabled,
     last_written_timestamp_for_delta_path,
     read_change_feed,
@@ -171,7 +170,9 @@ class NonDeltaLastWrittenTimestamp:
         if last_written_timestamp:
             # If you read from a table the same second that it's written, a race condition happens because
             # last_written_timestamp_for_delta_path has only second resolution, not millisecond
-            set_timestamp = max(set_timestamp, last_written_timestamp + timedelta(seconds=1))
+            set_timestamp = max(
+                set_timestamp, last_written_timestamp + timedelta(seconds=1)
+            )
         self.read_changes_times.setdefault(name, set_timestamp)
         last_written_timestamp = self.get_last_written_timestamp(name)
         if last_written_timestamp is not None:
