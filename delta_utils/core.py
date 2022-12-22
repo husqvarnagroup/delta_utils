@@ -1,7 +1,6 @@
 from datetime import datetime
 from typing import Optional
 
-from delta import DeltaTable  # type: ignore
 from pyspark.sql import DataFrame, SparkSession, functions as F
 from pyspark.sql.utils import AnalysisException
 
@@ -23,8 +22,6 @@ def read_change_feed(spark: SparkSession, path: str, **kwargs) -> DataFrame:
 
     If the delta table doesn't have delta.enableChangeDataFeed set to true, raises ReadChangeFeedDisabled exception
     """
-    if is_path(path) and not DeltaTable.isDeltaTable(spark, path):
-        raise AnalysisException(f"'{path}' is not a Delta table.", None)
     if not is_read_change_feed_enabled(spark, path):
         raise ReadChangeFeedDisabled(path)
     table = table_from_path(path)

@@ -1,7 +1,6 @@
-from datetime import datetime, timedelta
+from datetime import timedelta
 
 import pytest
-from pyspark.sql.utils import AnalysisException
 
 from delta_utils import (
     NoNewDataException,
@@ -47,12 +46,6 @@ def test_future_version(spark, base_test_dir):
     )
     with pytest.raises(NoNewDataException):
         read_change_feed(spark, path, startingTimestamp=last_timestamp)
-
-
-def test_raise_analysis_exception(spark, base_test_dir):
-    path = f"{base_test_dir}trusted"
-    with pytest.raises(AnalysisException, match=r"is not a Delta table"):
-        read_change_feed(spark, path, startingTimestamp=datetime(1970, 1, 1))
 
 
 def test_raise_read_change_feed_disabled(spark, base_test_dir):
