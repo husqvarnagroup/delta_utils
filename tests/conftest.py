@@ -1,5 +1,4 @@
 import os
-from tempfile import TemporaryDirectory
 
 import boto3
 import pytest
@@ -21,13 +20,6 @@ def spark():
         )
     )
     return configure_spark_with_delta_pip(builder).getOrCreate()
-
-
-@pytest.fixture(scope="function")
-def base_test_dir():
-    basedir = TemporaryDirectory()
-    yield basedir.name
-    basedir.cleanup()
 
 
 @pytest.fixture(scope="function")

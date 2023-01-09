@@ -15,11 +15,11 @@ def append_data(spark, path: str, data: list):
     )
 
 
-def test_non_delta_last_written_timestamp(spark, base_test_dir):
-    timestamp_path = f"{base_test_dir}/timestamps"
+def test_non_delta_last_written_timestamp(spark, tmp_path):
+    timestamp_path = str(tmp_path / "timestamps")
     timestamps = NonDeltaLastWrittenTimestamp(spark, timestamp_path)
 
-    path = f"{base_test_dir}/trusted"
+    path = str(tmp_path / "trusted")
     append_data(spark, path, [("one", 1)])
 
     df = timestamps.read_changes("my-table", path)
@@ -57,11 +57,11 @@ def test_non_delta_last_written_timestamp(spark, base_test_dir):
     assert result == output, result
 
 
-def test_wrong_name(spark, base_test_dir):
-    timestamp_path = f"{base_test_dir}/timestamps"
+def test_wrong_name(spark, tmp_path):
+    timestamp_path = str(tmp_path / "timestamps")
     timestamps = NonDeltaLastWrittenTimestamp(spark, timestamp_path)
 
-    path = f"{base_test_dir}/trusted"
+    path = str(tmp_path / "trusted")
     append_data(spark, path, [("one", 1)])
 
     timestamps.read_changes("my-table", path)
@@ -71,11 +71,11 @@ def test_wrong_name(spark, base_test_dir):
         timestamps.set_last_written_timestamp("wrong-table")
 
 
-def test_raise_read_change_feed_disabled(spark, base_test_dir):
-    timestamp_path = f"{base_test_dir}/timestamps"
+def test_raise_read_change_feed_disabled(spark, tmp_path):
+    timestamp_path = str(tmp_path / "timestamps")
     timestamps = NonDeltaLastWrittenTimestamp(spark, timestamp_path)
 
-    path = f"{base_test_dir}/trusted"
+    path = str(tmp_path / "trusted")
 
     append_data(spark, path, [("one", 1)])
     spark.sql(

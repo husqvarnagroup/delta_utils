@@ -5,8 +5,6 @@ services:
             context: .
             dockerfile: Dockerfile
         privileged: true
-        env_file:
-            - .env
         volumes:
             - ./:/var/project
         command: ./runtests.sh

@@ -42,11 +42,7 @@ jobs:
     steps:
     - uses: actions/checkout@v3
     - name: Docker build test image
-      env:
-        DATABRICKS_CONNECT: ${{ secrets.DATABRICKS_CONNECT }}
-        TEST_DIR: ${{ secrets.TEST_DIR }}
       run: |
-        echo "TEST_DIR=$TEST_DIR" > .env
         docker-compose build pytest
     - name: Pip list
       run: |

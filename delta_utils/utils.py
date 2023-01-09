@@ -2,7 +2,7 @@ from dataclasses import dataclass, field
 from datetime import datetime, timedelta
 from typing import Optional, Tuple, Union
 
-from delta import DeltaTable  # type: ignore
+from delta import DeltaTable
 from pyspark.sql import (
     DataFrame,
     DataFrameWriter,

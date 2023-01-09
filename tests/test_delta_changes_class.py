@@ -14,11 +14,11 @@ def setup_delta_table(spark, path: str) -> DeltaChanges:
     return dc
 
 
-def test_last_version(spark, base_test_dir):
-    path_from = f"{base_test_dir}/trusted1"
+def test_last_version(spark, tmp_path):
+    path_from = str(tmp_path / "trusted1")
     dc_from = setup_delta_table(spark, path_from)
 
-    path_to = f"{base_test_dir}/trusted2"
+    path_to = str(tmp_path / "trusted2")
     dc_to = DeltaChanges(spark, path_to)
 
     df = dc_to.read_changes(path_from)
@@ -57,8 +57,8 @@ def test_last_version(spark, base_test_dir):
     assert result == output, result
 
 
-def test_upsert(spark, base_test_dir):
-    path = f"{base_test_dir}/trusted"
+def test_upsert(spark, tmp_path):
+    path = str(tmp_path / "trusted")
     dc = DeltaChanges(spark, path)
     df = spark.createDataFrame([("one", 1), ("two", 2)], ("text", "number"))
     dc.upsert(df, join_fields=("number",))
@@ -94,9 +94,9 @@ def test_upsert(spark, base_test_dir):
     assert result == output, result
 
 
-def test_upsert_update_fields(spark, base_test_dir):
+def test_upsert_update_fields(spark, tmp_path):
     # Arrange
-    path = f"{base_test_dir}/trusted"
+    path = str(tmp_path / "trusted")
     dc = DeltaChanges(spark, path)
     created = datetime(2022, 1, 1)
     df = spark.createDataFrame(
@@ -139,8 +139,8 @@ def test_upsert_update_fields(spark, base_test_dir):
     assert result == output, result
 
 
-def test_raise_read_change_feed_disabled(spark, base_test_dir):
-    path_from = f"{base_test_dir}/trusted1"
+def test_raise_read_change_feed_disabled(spark, tmp_path):
+    path_from = str(tmp_path / "trusted1")
     spark.createDataFrame([("one", 1)], ("text", "number")).write.save(
         path_from, format="delta"
     )
@@ -152,7 +152,7 @@ def test_raise_read_change_feed_disabled(spark, base_test_dir):
     dc_from = DeltaChanges(spark, path_from)
     dc_from.upsert(df, join_fields=("number",))
 
-    path_to = f"{base_test_dir}/trusted2"
+    path_to = str(tmp_path / "trusted2")
     dc_to = DeltaChanges(spark, path_to)
 
     with pytest.raises(ReadChangeFeedDisabled):
