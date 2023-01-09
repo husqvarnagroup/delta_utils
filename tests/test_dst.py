@@ -13,7 +13,7 @@ def base_dst(spark, base_test_dir):
         ],
         ("name", "status", "timestamp"),
     )
-    path = f"{base_test_dir}trusted1"
+    path = f"{base_test_dir}/trusted1"
     df.write.save(path, format="delta")
     spark.sql(
         f"ALTER TABLE delta.`{path}` SET TBLPROPERTIES (delta.enableChangeDataFeed = true)"
@@ -23,13 +23,13 @@ def base_dst(spark, base_test_dir):
 
     dst.register("trusted1", path=path)
 
-    @dst.table(path=f"{base_test_dir}trusted-niels", mode="append")
+    @dst.table(path=f"{base_test_dir}/trusted-niels", mode="append")
     def trusted_niels():
         df = dst.read_changes("trusted1")
         return df.where(F.col("name") == "niels")
 
     @dst.table(
-        path=f"{base_test_dir}service-niels",
+        path=f"{base_test_dir}/service-niels",
         mode="upsert",
         join_fields=["name", "start"],
         update_fields=["stop"],
@@ -114,7 +114,7 @@ def add_new_data(spark, base_test_dir, dst):
         ],
         ("name", "status", "timestamp"),
     )
-    path = f"{base_test_dir}trusted1"
+    path = f"{base_test_dir}/trusted1"
     df.write.save(path, format="delta", mode="append")
     dst.run_all()
 

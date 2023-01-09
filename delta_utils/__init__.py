@@ -4,6 +4,7 @@ from .core import (
     last_written_timestamp_for_delta_path,
     read_change_feed,
 )
+from .geocoding import lookup_country
 from .utils import DeltaChanges, NonDeltaLastWrittenTimestamp, new_and_updated
 
 __all__ = (
@@ -14,4 +15,5 @@ __all__ = (
     "DeltaChanges",
     "NonDeltaLastWrittenTimestamp",
     "new_and_updated",
+    "lookup_country",
 )

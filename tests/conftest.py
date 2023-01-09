@@ -1,40 +1,33 @@
 import os
-from datetime import datetime
-from uuid import uuid4
+from tempfile import TemporaryDirectory
 
 import boto3
 import pytest
+from delta import configure_spark_with_delta_pip
 from moto import mock_s3  # type: ignore
-from pyspark.dbutils import DBUtils
 from pyspark.sql import SparkSession
-
-base_dir = os.getenv("TEST_DIR")
-assert base_dir, "You need to set the TEST_DIR environmental variable"
 
 assert os.getenv("TZ") == "UTC", "Environmental variable 'TZ' must be set to 'UTC'"
 
 
 @pytest.fixture(scope="session")
 def spark():
-    return (
+    builder = (
         SparkSession.builder.appName("pytest")
-        .config("spark.metrics.namespace", "${spark.app.name}")
-        .getOrCreate()
+        .config("spark.sql.extensions", "io.delta.sql.DeltaSparkSessionExtension")
+        .config(
+            "spark.sql.catalog.spark_catalog",
+            "org.apache.spark.sql.delta.catalog.DeltaCatalog",
+        )
     )
-
-
-@pytest.fixture(scope="session")
-def dbutils(spark):
-    dbutils_ = DBUtils(spark)
-    try:
-        yield dbutils_
-    finally:
-        dbutils_.fs.rm(base_dir, recurse=True)
+    return configure_spark_with_delta_pip(builder).getOrCreate()
 
 
 @pytest.fixture(scope="function")
 def base_test_dir():
-    return f"{base_dir}{datetime.now():%Y-%m-%d-%H-%M-%S}/{uuid4()}/"
+    basedir = TemporaryDirectory()
+    yield basedir.name
+    basedir.cleanup()
 
 
 @pytest.fixture(scope="function")
