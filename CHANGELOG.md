@@ -8,6 +8,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 ### Added
 - Warning message when initializing a DeltaChanges class when the table is not a delta table
+- New geocoding module to resolve country and address for a geo position
+- New SSM module to fetch data from AWS parameter store
 ### Fixed
 - DeltaTable.isDeltaTable doesn't seem to work with Unity Catalog,
   the function `delta_utils.core.last_written_timestamp_for_delta_path` will now try to get the last timestamp
