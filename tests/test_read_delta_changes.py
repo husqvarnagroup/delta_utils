@@ -18,8 +18,8 @@ def append_data(spark, path: str, data: list):
     )
 
 
-def test_new_version(spark, base_test_dir):
-    path = f"{base_test_dir}trusted"
+def test_new_version(spark, tmp_path):
+    path = str(tmp_path / "trusted")
     append_data(spark, path, [("one", 1)])
     append_data(spark, path, [("two", 2)])
 
@@ -37,8 +37,8 @@ def test_new_version(spark, base_test_dir):
     assert result == output, result
 
 
-def test_future_version(spark, base_test_dir):
-    path = f"{base_test_dir}trusted"
+def test_future_version(spark, tmp_path):
+    path = str(tmp_path / "trusted")
     append_data(spark, path, [("one", 1)])
 
     last_timestamp = last_written_timestamp_for_delta_path(spark, path) + timedelta(
@@ -48,8 +48,8 @@ def test_future_version(spark, base_test_dir):
         read_change_feed(spark, path, startingTimestamp=last_timestamp)
 
 
-def test_raise_read_change_feed_disabled(spark, base_test_dir):
-    path = f"{base_test_dir}trusted"
+def test_raise_read_change_feed_disabled(spark, tmp_path):
+    path = str(tmp_path / "trusted")
     append_data(spark, path, [("one", 1)])
     spark.sql(
         f"ALTER TABLE delta.`{path}` SET TBLPROPERTIES (delta.enableChangeDataFeed = false)"

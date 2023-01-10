@@ -5,7 +5,7 @@ from pyspark.sql import functions as F, window as W
 from delta_utils.dst import DeltaStaticTable
 
 
-def base_dst(spark, base_test_dir):
+def base_dst(spark, tmp_path):
     df = spark.createDataFrame(
         [
             ("niels", "mowing", datetime(2022, 1, 1, 8, 0)),
@@ -13,7 +13,7 @@ def base_dst(spark, base_test_dir):
         ],
         ("name", "status", "timestamp"),
     )
-    path = f"{base_test_dir}trusted1"
+    path = str(tmp_path / "trusted1")
     df.write.save(path, format="delta")
     spark.sql(
         f"ALTER TABLE delta.`{path}` SET TBLPROPERTIES (delta.enableChangeDataFeed = true)"
@@ -23,13 +23,13 @@ def base_dst(spark, base_test_dir):
 
     dst.register("trusted1", path=path)
 
-    @dst.table(path=f"{base_test_dir}trusted-niels", mode="append")
+    @dst.table(path=str(tmp_path / "trusted-niels"), mode="append")
     def trusted_niels():
         df = dst.read_changes("trusted1")
         return df.where(F.col("name") == "niels")
 
     @dst.table(
-        path=f"{base_test_dir}service-niels",
+        path=str(tmp_path / "service-niels"),
         mode="upsert",
         join_fields=["name", "start"],
         update_fields=["stop"],
@@ -105,7 +105,7 @@ def base_dst(spark, base_test_dir):
     return dst
 
 
-def add_new_data(spark, base_test_dir, dst):
+def add_new_data(spark, tmp_path, dst):
     df = spark.createDataFrame(
         [
             ("niels", "mowing", datetime(2022, 1, 1, 8, 30)),
@@ -114,7 +114,7 @@ def add_new_data(spark, base_test_dir, dst):
         ],
         ("name", "status", "timestamp"),
     )
-    path = f"{base_test_dir}trusted1"
+    path = str(tmp_path / "trusted1")
     df.write.save(path, format="delta", mode="append")
     dst.run_all()
 
@@ -124,15 +124,15 @@ def assert_dataframe_equals(df, expected: list):
     assert data == expected
 
 
-def test_trusted(spark, base_test_dir):
-    dst = base_dst(spark, base_test_dir)
+def test_trusted(spark, tmp_path):
+    dst = base_dst(spark, tmp_path)
     dst.run_all()
 
     expected = [("niels", "mowing", datetime(2022, 1, 1, 8, 0))]
     assert_dataframe_equals(dst.read("trusted_niels"), expected)
 
     # New data
-    add_new_data(spark, base_test_dir, dst)
+    add_new_data(spark, tmp_path, dst)
 
     expected = [
         ("niels", "mowing", datetime(2022, 1, 1, 8, 0)),
@@ -142,15 +142,15 @@ def test_trusted(spark, base_test_dir):
     assert_dataframe_equals(dst.read("trusted_niels").orderBy("timestamp"), expected)
 
 
-def test_service(spark, base_test_dir):
-    dst = base_dst(spark, base_test_dir)
+def test_service(spark, tmp_path):
+    dst = base_dst(spark, tmp_path)
     dst.run_all()
 
     expected = [("niels", "mowing", datetime(2022, 1, 1, 8, 0), None)]
     assert_dataframe_equals(dst.read("service").orderBy("start"), expected)
 
     # New data
-    add_new_data(spark, base_test_dir, dst)
+    add_new_data(spark, tmp_path, dst)
 
     expected = [
         ("niels", "mowing", datetime(2022, 1, 1, 8, 0), datetime(2022, 1, 1, 9, 0)),

@@ -2,7 +2,7 @@ from dataclasses import dataclass, field
 from datetime import datetime
 from typing import Optional
 
-from delta import DeltaTable  # type: ignore
+from delta import DeltaTable
 from pyspark.sql import SparkSession, functions as F
 
 from .core import (

@@ -11,10 +11,13 @@ license = "MIT"
 [tool.poetry.dependencies]
 python = "^3.8"
 boto3 = "*"
+reverse_geocoder = "*"
+iso3166 = "*"
 
 [tool.poetry.dev-dependencies]
-mkdocs-material = "^8.2.9"
-mkdocstrings-python = "^0.8.2"
+delta-spark = "*"
+mkdocs-material = "*"
+mkdocstrings-python = "*"
 black = "*"
 isort = "*"
 flake8 = "*"
@@ -22,7 +25,7 @@ mypy = "*"
 pre-commit = "*"
 pytest = "*"
 pytest-cov = "*"
-databricks-connect = "10.4.*"
+pytest-mock = "*"
 mkdocs = "*"
 moto = {extras = ["s3"], version = "*"}
 boto3-stubs = {extras = ["s3"], version = "*"}

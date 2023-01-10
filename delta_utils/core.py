@@ -94,4 +94,4 @@ def is_read_change_feed_enabled(spark: SparkSession, path: str) -> bool:
 
 
 def spark_current_timestamp(spark: SparkSession) -> datetime:
-    return spark.sql("SELECT current_timestamp()").first()[0]
+    return spark.sql("SELECT current_timestamp()").first()[0]  # type: ignore
