@@ -2,7 +2,7 @@ import re
 from collections import Counter
 from typing import List, Optional
 
-from pyspark.sql import types as T
+from pyspark.sql import functions as F, types as T
 from pyspark.sql.dataframe import DataFrame
 
 invalid_chars = r'[\[\]\(\)\.\s"\,\;\{\}\-\ :]'
@@ -107,3 +107,23 @@ def flatten(df: DataFrame, nested_names=True) -> DataFrame:
     check_duplicates(df.columns, "Found duplicates columns when flattening")
 
     return df
+
+
+def drop_all_parameters_null_columns(df: DataFrame) -> DataFrame:
+    """
+    This function drops all columns which contain only null values in parameters column.
+    :param df: A PySpark DataFrame
+    """
+    df_param = df
+    null_counts = (
+        df_param.select(
+            [F.count(F.when(F.col(c).isNull(), c)).alias(c) for c in df_param.columns]
+        )
+        .collect()[0]
+        .asDict()
+    )
+    num_of_rows = df.count()
+    to_drop = [k for k, v in null_counts.items() if v == num_of_rows]
+    df_param_keep = df_param.drop(*to_drop)
+
+    return df_param_keep

@@ -80,6 +80,24 @@ def table_from_path(path: str):
     return path
 
 
+def location_for_hive_table(spark: SparkSession, table: str) -> str:
+    """
+    Returns the S3 prefix for a delta table
+
+    Args:
+        string: The table name. Preferably according to the UC three level namespace
+        <catalog>.<schema>.<table>
+    Returns:
+        string: AWS S3 full prefix path
+    """
+    return (
+        spark.sql(f"DESCRIBE EXTENDED {table}")  # type: ignore
+        .where(F.col("col_name") == "Location")
+        .select("data_type")
+        .first()["data_type"]
+    )
+
+
 def is_read_change_feed_enabled(spark: SparkSession, path: str) -> bool:
     """Check if delta.enableChangeDataFeed is enabled"""
     table = table_from_path(path)

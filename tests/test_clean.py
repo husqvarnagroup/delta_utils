@@ -1,7 +1,11 @@
 import pytest
 from pyspark.sql import types as T
 
-from delta_utils.clean import fix_invalid_column_names, flatten
+from delta_utils.clean import (
+    drop_all_parameters_null_columns,
+    fix_invalid_column_names,
+    flatten,
+)
 
 
 def test_fix_invalid_col_names(spark):
@@ -264,3 +268,30 @@ def test_flatten_table_no_nested_names(spark):
         "ge n(de-r",
         "sa;lar)y",
     ]
+
+
+def test_drop_all_parameters_null_columns(spark):
+    # Arrange
+    input = spark.createDataFrame(
+        [
+            ("one", None),
+        ],
+        T.StructType(
+            [
+                T.StructField("id", T.StringType(), True),
+                T.StructField("nulls", T.StringType(), True),
+            ]
+        ),
+    )
+    expected = spark.createDataFrame(
+        [
+            ("one",),
+        ],
+        T.StructType([T.StructField("id", T.StringType(), True)]),
+    )
+
+    # Act
+    actual = drop_all_parameters_null_columns(input)
+
+    # Assert
+    assert expected.columns == actual.columns
