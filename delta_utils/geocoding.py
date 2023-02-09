@@ -22,6 +22,21 @@ def lookup_country(
     fields: Optional[List[str]] = None,
     country_fields: Optional[List[str]] = None,
 ):
+    """
+    Returns a dictionary with all settings from the path
+
+    Args:
+        df (Dataframe): A spark dataframe
+        latitude_field_name (str): The latitude field name in the dataframe
+        longitude_field_name (str): The logitude field name in the dataframe
+        fields ([str]): What fields to return in the dataframe after proccesing, default is all columns
+        country_fields ([str]): Specify what geocoder fields to return, default is all columns ("cc", "name", "admin1", "admin2", "country_name")
+
+
+    Returns:
+        Returns a dict of paramters from the given path
+
+    """
     if fields is None:
         fields = df.columns
     if country_fields is None:

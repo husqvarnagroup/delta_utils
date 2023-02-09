@@ -15,6 +15,22 @@ pip install git+https://github.com/husqvarnagroup/delta_utils.git
 - As the package, enter "git+https://github.com/husqvarnagroup/delta_utils.git"
 - Press Install
 
-## Databricks connect setup
+## Development
 
-https://docs.databricks.com/dev-tools/databricks-connect.html
+For package management we use poetry. Go to root of project then enter
+
+``` bash
+# Install all packages
+poetry install
+
+# Go into poetry shell to get your own virtual enviroment
+poetry shell
+```
+
+### Mkdocs
+
+To start the documentation server locally enter
+
+```bash
+mkdocs serve
+```
