@@ -4,7 +4,14 @@ AWS_REGION = "eu-west-1"
 
 
 def ssm_params(path: str) -> dict:
-    """Returns a dictionary with all settings from the path"""
+    """
+    Args:
+        path (str): The path in ssm to search for parameters in (i.e. /iam/live/)
+
+    Returns:
+        dict of paramters from the given path
+    """
+
     ssm = boto3.client("ssm", region_name=AWS_REGION)
     results = {}
     if not path.endswith("/"):
