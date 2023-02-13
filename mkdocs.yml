@@ -13,7 +13,7 @@ nav:
         - 'ssm.md'
       - 'Other':
         - 'geocoding.md'
-
+        - 'core.md'
     - 'About':
           - Issue Tracker: 'https://github.com/husqvarnagroup/delta_utils/issues'
           - 'CHANGELOG.md'
@@ -24,8 +24,6 @@ plugins:
           python:
             selection:
               docstring_style: google
-        watch:
-          - delta_utils/
     - search
     - RootFiles:
           files:

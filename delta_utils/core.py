@@ -68,11 +68,11 @@ def last_written_timestamp_for_delta_path(
     return response["timestamp"]
 
 
-def is_path(path):
+def is_path(path: str) -> bool:
     return path.startswith("/") or path.startswith("s3://")
 
 
-def table_from_path(path: str):
+def table_from_path(path: str) -> str:
     """Returns a table name from a path"""
     if is_path(path):
         return f"delta.`{path}`"
@@ -82,13 +82,12 @@ def table_from_path(path: str):
 
 def location_for_hive_table(spark: SparkSession, table: str) -> str:
     """
-    Returns the S3 prefix for a delta table
-
     Args:
-        string: The table name. Preferably according to the UC three level namespace
-        <catalog>.<schema>.<table>
+        spark (SparkSession): The spark session
+        table (str): The table name. Preferably according to the UC three level namespace {catalog}.{schema}.{table}
+
     Returns:
-        string: AWS S3 full prefix path
+        AWS S3 full path
     """
     return (
         spark.sql(f"DESCRIBE EXTENDED {table}")  # type: ignore
@@ -99,7 +98,15 @@ def location_for_hive_table(spark: SparkSession, table: str) -> str:
 
 
 def is_read_change_feed_enabled(spark: SparkSession, path: str) -> bool:
-    """Check if delta.enableChangeDataFeed is enabled"""
+    """Check if delta.enableChangeDataFeed is enabled
+
+    Args:
+        spark (SparkSession): The spark session
+        path (str): path to the data location
+
+    Returns:
+        if read change feed is enabled
+    """
     table = table_from_path(path)
     return (
         spark.sql(f"SHOW TBLPROPERTIES {table}")
@@ -112,4 +119,12 @@ def is_read_change_feed_enabled(spark: SparkSession, path: str) -> bool:
 
 
 def spark_current_timestamp(spark: SparkSession) -> datetime:
+    """Check if delta.enableChangeDataFeed is enabled
+
+    Args:
+        spark (SparkSession): The spark session
+
+    Returns:
+        the current timestamp from spark
+    """
     return spark.sql("SELECT current_timestamp()").first()[0]  # type: ignore

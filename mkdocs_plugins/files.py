@@ -34,5 +34,5 @@ class RootFiles(BasePlugin):
         for filename in self.config["files"]:
             root_file = project_path / filename
             if root_file.samefile(page.file.abs_src_path):
-                page.edit_url = f"{config['repo_url']}edit/master/{filename}"
+                page.edit_url = f"{config['repo_url']}edit/main/{filename}"
         return page
