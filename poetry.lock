@@ -831,19 +831,19 @@ tox = ["tox"]
 
 [[package]]
 name = "delta-spark"
-version = "2.2.0"
+version = "2.4.0"
 description = "Python APIs for using Delta Lake with Apache Spark"
 category = "dev"
 optional = false
 python-versions = ">=3.6"
 files = [
-    {file = "delta-spark-2.2.0.tar.gz", hash = "sha256:8a22b75c21aafe0d5d05e38be012b932d48441465a19c49ac658136afdee0933"},
-    {file = "delta_spark-2.2.0-py3-none-any.whl", hash = "sha256:0d3194ac5ff91746c7f8d480fd99211e7edfab6e9b7b5f464527702d34cd427b"},
+    {file = "delta-spark-2.4.0.tar.gz", hash = "sha256:ef776e325e80d98e3920cab982c747b094acc46599d62dfcdc9035fb112ba6a9"},
+    {file = "delta_spark-2.4.0-py3-none-any.whl", hash = "sha256:7204142a97ef16367403b020d810d0c37f4ae8275b4997de4056423cf69b3a4b"},
 ]
 
 [package.dependencies]
 importlib-metadata = ">=1.0.0"
-pyspark = ">=3.3.0,<3.4.0"
+pyspark = ">=3.4.0,<3.5.0"
 
 [[package]]
 name = "distlib"
@@ -1535,14 +1535,14 @@ virtualenv = ">=20.10.0"
 
 [[package]]
 name = "py4j"
-version = "0.10.9.5"
+version = "0.10.9.7"
 description = "Enables Python programs to dynamically access arbitrary Java objects"
 category = "dev"
 optional = false
 python-versions = "*"
 files = [
-    {file = "py4j-0.10.9.5-py2.py3-none-any.whl", hash = "sha256:52d171a6a2b031d8a5d1de6efe451cf4f5baff1a2819aabc3741c8406539ba04"},
-    {file = "py4j-0.10.9.5.tar.gz", hash = "sha256:276a4a3c5a2154df1860ef3303a927460e02e97b047dc0a47c1c3fb8cce34db6"},
+    {file = "py4j-0.10.9.7-py2.py3-none-any.whl", hash = "sha256:85defdfd2b2376eb3abf5ca6474b51ab7e0de341c75a02f46dc9b5976f5a5c1b"},
+    {file = "py4j-0.10.9.7.tar.gz", hash = "sha256:0b6e5315bb3ada5cf62ac651d107bb2ebc02def3dee9d9548e3baac644ea8dbb"},
 ]
 
 [[package]]
@@ -1613,23 +1613,24 @@ markdown = ">=3.2"
 
 [[package]]
 name = "pyspark"
-version = "3.3.1"
+version = "3.4.0"
 description = "Apache Spark Python API"
 category = "dev"
 optional = false
 python-versions = ">=3.7"
 files = [
-    {file = "pyspark-3.3.1.tar.gz", hash = "sha256:e99fa7de92be406884bfd831c32b9306a3a99de44cfc39a2eefb6ed07445d5fa"},
+    {file = "pyspark-3.4.0.tar.gz", hash = "sha256:167a23e11854adb37f8602de6fcc3a4f96fd5f1e323b9bb83325f38408c5aafd"},
 ]
 
 [package.dependencies]
-py4j = "0.10.9.5"
+py4j = "0.10.9.7"
 
 [package.extras]
+connect = ["googleapis-common-protos (>=1.56.4)", "grpcio (>=1.48.1)", "grpcio-status (>=1.48.1)", "numpy (>=1.15)", "pandas (>=1.0.5)", "pyarrow (>=1.0.0)"]
 ml = ["numpy (>=1.15)"]
 mllib = ["numpy (>=1.15)"]
 pandas-on-spark = ["numpy (>=1.15)", "pandas (>=1.0.5)", "pyarrow (>=1.0.0)"]
-sql = ["pandas (>=1.0.5)", "pyarrow (>=1.0.0)"]
+sql = ["numpy (>=1.15)", "pandas (>=1.0.5)", "pyarrow (>=1.0.0)"]
 
 [[package]]
 name = "pytest"
