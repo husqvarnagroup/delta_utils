@@ -10,12 +10,13 @@ license = "MIT"
 
 [tool.poetry.dependencies]
 python = "^3.8"
-boto3 = "*"
+boto3 = "^1.26.153"
 reverse_geocoder = "*"
 iso3166 = "*"
 
 [tool.poetry.dev-dependencies]
 delta-spark = "*"
+pyspark = "<3.4"
 mkdocs-material = "*"
 mkdocstrings-python = "*"
 black = "*"
