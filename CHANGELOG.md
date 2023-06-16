@@ -12,6 +12,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - New SSM module to fetch data from AWS parameter store
 - Function drop_all_parameters_null_columns
 - Function location_for_hive_table
+- Lineage class to get downstream_tables
+- pii.Producer and pii.Consumer for creating pii removal requests
+
 ### Fixed
 - DeltaTable.isDeltaTable doesn't seem to work with Unity Catalog,
   the function `delta_utils.core.last_written_timestamp_for_delta_path` will now try to get the last timestamp

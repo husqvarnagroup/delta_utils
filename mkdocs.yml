@@ -11,9 +11,11 @@ nav:
         - 'clean.md'
       - 'AWS':
         - 'ssm.md'
+      - 'pii.md'
       - 'Other':
         - 'geocoding.md'
         - 'core.md'
+        - 'lineage.md'
     - 'About':
           - Issue Tracker: 'https://github.com/husqvarnagroup/delta_utils/issues'
           - 'CHANGELOG.md'
