@@ -10,7 +10,7 @@ license = "MIT"
 
 [tool.poetry.dependencies]
 python = "^3.8"
-boto3 = "^1.26.153"
+boto3 = "^1.28.24"
 reverse_geocoder = "*"
 iso3166 = "*"
 requests = "*"
