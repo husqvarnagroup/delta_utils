@@ -9,15 +9,15 @@ documentation = "https://delta-utils.readthedocs.io/en/latest/"
 license = "MIT"
 
 [tool.poetry.dependencies]
-python = "^3.8"
-boto3 = "^1.28.51"
+python = "^3.10"
+boto3 = "^1.34"
 reverse_geocoder = "*"
 iso3166 = "*"
 requests = "*"
 
 [tool.poetry.dev-dependencies]
 delta-spark = "*"
-pyspark = "<3.4"
+pyspark = "<4"
 mkdocs-material = "*"
 mkdocstrings-python = "*"
 black = "*"

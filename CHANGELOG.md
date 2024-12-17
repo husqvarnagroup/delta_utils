@@ -1,7 +1,7 @@
 # Changelog
 All notable changes to this project will be documented in this file.
 
-The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
+The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 
@@ -13,7 +13,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Function drop_all_parameters_null_columns
 - Function location_for_hive_table
 - Lineage class to get downstream_tables
-- pii.Producer and pii.Consumer for creating pii removal requests
+- Upgrade to Python 3.10 and above
 
 ### Fixed
 - DeltaTable.isDeltaTable doesn't seem to work with Unity Catalog,

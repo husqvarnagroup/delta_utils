@@ -1,4 +1,5 @@
 """Unit tests of the delta_utils.ssm module"""
+
 from delta_utils import ssm
 
 

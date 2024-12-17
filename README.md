@@ -1,9 +1,16 @@
 # Delta utils
 
+## Requirements
+
+- Python 3.10
+- Databricks Runtime Version 13.3 and above
+
+
 ## Installation
 
+Look for the latest version in the [Github Tags section](https://github.com/husqvarnagroup/delta_utils/tags) of this repo.
 ```bash
-pip install git+https://github.com/husqvarnagroup/delta_utils.git
+pip install https://github.com/husqvarnagroup/delta_utils/archive/0.4.0.zip
 ```
 
 ### Installation on a cluster in Databricks
@@ -12,7 +19,7 @@ pip install git+https://github.com/husqvarnagroup/delta_utils.git
 - Go to Libraries
 - Click Install new
 - Select PyPI
-- As the package, enter "git+https://github.com/husqvarnagroup/delta_utils.git"
+- As the package, enter "https://github.com/husqvarnagroup/delta_utils/archive/0.4.0.zip"
 - Press Install
 
 ## Development
