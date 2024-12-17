@@ -36,7 +36,7 @@ def read_change_feed(spark: SparkSession, path: str, **kwargs) -> DataFrame:
     except AnalysisException as e:
         error_msg = str(e)
         print(error_msg)
-        if (
+        if "DELTA_TIMESTAMP_GREATER_THAN_COMMIT" in error_msg or (
             error_msg.startswith("The provided timestamp")
             and "is after the latest version available to this" in error_msg
         ):

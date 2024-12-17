@@ -3,6 +3,7 @@
 This feature is deprecated. Databricks Unity Catalog disables s3 access, we recommend you to use
 (Databricks Auto Loader)[https://docs.databricks.com/ingestion/auto-loader/options.html] instead
 """
+
 import uuid
 from contextlib import contextmanager
 from dataclasses import dataclass

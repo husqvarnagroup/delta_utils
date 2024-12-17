@@ -3,10 +3,8 @@ import os
 import boto3
 import pytest
 from delta import configure_spark_with_delta_pip
-from moto import mock_s3  # type: ignore
+from moto import mock_aws  # type: ignore
 from pyspark.sql import SparkSession
-
-from delta_utils import pii
 
 assert os.getenv("TZ") == "UTC", "Environmental variable 'TZ' must be set to 'UTC'"
 
@@ -27,17 +25,7 @@ def spark():
 
 @pytest.fixture(scope="function")
 def mocked_s3_bucket_name():
-    with mock_s3():
+    with mock_aws():
         conn = boto3.resource("s3", region_name="us-east-1")
         conn.create_bucket(Bucket="mybucket")
         yield "mybucket"
-
-
-@pytest.fixture(scope="function")
-def setup_pii_table(spark):
-    def inner():
-        spark.sql("CREATE DATABASE IF NOT EXISTS gdpr")
-        spark.sql(f"DROP TABLE IF EXISTS {pii.get_pii_table_name()}")
-        pii.create_pii_table(spark)
-
-    return inner
