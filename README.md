@@ -10,7 +10,7 @@
 
 Look for the latest version in the [Github Tags section](https://github.com/husqvarnagroup/delta_utils/tags) of this repo.
 ```bash
-pip install https://github.com/husqvarnagroup/delta_utils/archive/0.4.0.zip
+pip install https://github.com/husqvarnagroup/delta_utils/archive/0.5.0.zip
 ```
 
 ### Installation on a cluster in Databricks
@@ -19,7 +19,7 @@ pip install https://github.com/husqvarnagroup/delta_utils/archive/0.4.0.zip
 - Go to Libraries
 - Click Install new
 - Select PyPI
-- As the package, enter "https://github.com/husqvarnagroup/delta_utils/archive/0.4.0.zip"
+- As the package, enter "https://github.com/husqvarnagroup/delta_utils/archive/0.5.0.zip"
 - Press Install
 
 ## Development
