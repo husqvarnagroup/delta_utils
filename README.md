@@ -19,7 +19,7 @@ pip install https://github.com/husqvarnagroup/delta_utils/archive/refs/tags/v0.5
 - Go to Libraries
 - Click Install new
 - Select PyPI
-- As the package, enter https://github.com/husqvarnagroup/delta_utils/archive/refs/tags/v0.5.0.zip"
+- As the package, enter https://github.com/husqvarnagroup/delta_utils/archive/refs/tags/v0.5.0.zip
 - Press Install
 
 ## Development
