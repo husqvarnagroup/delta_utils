@@ -1,19 +1,11 @@
 from functools import partial
-from itertools import islice
 from typing import List, Optional
 
+import pyarrow  # type: ignore
+import pyspark.sql.types as T
 import reverse_geocoder as rg  # type: ignore
 from iso3166 import countries as iso3166_countries
 from pyspark.sql import DataFrame
-
-
-def chunked(iterator, size):
-    iterator_ = iter(iterator)
-    while True:
-        rows = list(islice(iterator_, size))
-        if not rows:
-            break
-        yield rows
 
 
 def lookup_country(
@@ -34,37 +26,42 @@ def lookup_country(
     Returns:
         DataFrame containing the columns specified in country_fields or by default cc, name, admin1, admin2, country_name
     """
-    if fields is None:
-        fields = df.columns
+    if fields is not None:
+        df = df.select(fields)
     if country_fields is None:
         country_fields = ["cc", "name", "admin1", "admin2", "country_name"]
-    return df.rdd.mapPartitions(
+    schema = T.StructType.fromJson(df.schema.jsonValue())
+    for field in country_fields:
+        schema = schema.add(field, T.StringType())
+    return df.mapInArrow(
         partial(
             _lookup_country_partial,
             latitude_field_name=latitude_field_name,
             longitude_field_name=longitude_field_name,
-            fields=fields,
             country_fields=country_fields,
-        )
-    ).toDF([*fields, *country_fields])
+        ),
+        schema,
+    )
 
 
 def _lookup_country_partial(
     rows,
     latitude_field_name: str,
     longitude_field_name: str,
-    fields: List[str],
     country_fields: List[str],
 ):
     has_country_name = "country_name" in country_fields and iso3166_countries
-    for chunk in chunked(rows, 10_000):
-        chunk = list(chunk)
+    for batch in rows:
+        chunk = batch.to_pylist()
         results = rg.search(
-            [(o[latitude_field_name], o[longitude_field_name]) for o in chunk]
+            [(o[latitude_field_name], o[longitude_field_name]) for o in chunk], mode=1
         )
+        items = []
         for item, result in zip(chunk, results):
             if has_country_name:
                 result["country_name"] = iso3166_countries.get(result["cc"]).name
-            yield tuple(item[field_name] for field_name in fields) + tuple(
-                result[field_name] for field_name in country_fields
+            item.update(
+                {field_name: result[field_name] for field_name in country_fields}
             )
+            items.append(item)
+        yield pyarrow.RecordBatch.from_pylist(items)
