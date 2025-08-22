@@ -14,10 +14,11 @@ boto3 = "^1.34"
 reverse_geocoder = "*"
 iso3166 = "*"
 requests = "*"
+pyarrow = "*"
 
-[tool.poetry.dev-dependencies]
+[tool.poetry.group.dev.dependencies]
 delta-spark = "*"
-pyspark = "<4"
+pyspark = ">=3.5,<4"
 mkdocs-material = "*"
 mkdocstrings-python = "*"
 black = "*"
@@ -33,6 +34,7 @@ moto = {extras = ["s3"], version = "*"}
 boto3-stubs = {extras = ["s3"], version = "*"}
 requests-mock = "*"
 types-requests = "*"
+pandas = ">=1.0.5"
 
 [build-system]
 requires = ["poetry-core>=1.0.0"]

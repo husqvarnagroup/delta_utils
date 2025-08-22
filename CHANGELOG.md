@@ -6,6 +6,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 
 ## [Unreleased]
+### Added
+- Support for `delta_utils.geocoding.lookup_country` can run on serverless
+
+### Changed
+- Using DataFrame.mapInArrow instead of DataFrame.rdd.mapPartitions in `delta_utils.geocoding.lookup_country`
+  resulted in an accidental performance increase
 
 ## [0.5.0] - 2024-12-18
 ### Added
