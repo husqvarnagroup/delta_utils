@@ -18,7 +18,7 @@ pyarrow = "*"
 
 [tool.poetry.group.dev.dependencies]
 delta-spark = "*"
-pyspark = ">=3.5,<4"
+pyspark = ">=3.5,<5"
 mkdocs-material = "*"
 mkdocstrings-python = "*"
 black = "*"
