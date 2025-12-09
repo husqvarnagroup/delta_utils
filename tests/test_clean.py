@@ -9,8 +9,6 @@ from delta_utils.clean import (
 
 
 def test_fix_invalid_col_names(spark):
-    spark.conf.set("spark.sql.caseSensitive", "true")
-
     schema = T.StructType(
         [
             T.StructField("id", T.StringType(), True),
@@ -45,8 +43,6 @@ def test_fix_invalid_col_names(spark):
 
 
 def test_invalid_col_names_raise_error(spark):
-    spark.conf.set("spark.sql.caseSensitive", "true")
-
     schema = T.StructType(
         [
             T.StructField("id", T.StringType(), True),
@@ -84,8 +80,6 @@ def test_invalid_col_names_raise_error(spark):
 
 
 def test_flatten_table(spark):
-    spark.conf.set("spark.sql.caseSensitive", "true")
-
     schema = T.StructType(
         [
             T.StructField(
@@ -161,8 +155,6 @@ def test_flatten_table(spark):
 
 
 def test_flatten_table_raise_error(spark):
-    spark.conf.set("spark.sql.caseSensitive", "true")
-
     schema = T.StructType(
         [
             T.StructField(
@@ -198,8 +190,6 @@ def test_flatten_table_raise_error(spark):
 
 
 def test_flatten_table_no_nested_names(spark):
-    spark.conf.set("spark.sql.caseSensitive", "true")
-
     schema = T.StructType(
         [
             T.StructField(

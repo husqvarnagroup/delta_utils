@@ -1,44 +1,47 @@
-[tool.poetry]
+[project]
 name = "delta_utils"
 version = "0.6.0"
 description = ""
-authors = ["Niels Lemmens <1936122+bulv1ne@users.noreply.github.com>"]
 readme = "README.md"
+requires-python = ">=3.12"
 repository = "https://github.com/husqvarnagroup/delta_utils/"
 documentation = "https://delta-utils.readthedocs.io/en/latest/"
 license = "MIT"
 
-[tool.poetry.dependencies]
-python = "^3.10"
-boto3 = "^1.34"
-reverse_geocoder = "*"
-iso3166 = "*"
-requests = "*"
-pyarrow = "*"
+dependencies = [
+    "boto3>=1.40",
+    "reverse_geocoder",
+    "iso3166",
+    "requests",
+    "pyarrow"
+]
 
-[tool.poetry.group.dev.dependencies]
-delta-spark = "*"
-pyspark = ">=3.5,<4"
-mkdocs-material = "*"
-mkdocstrings-python = "*"
-black = "*"
-isort = "*"
-flake8 = "*"
-mypy = "*"
-pre-commit = "*"
-pytest = "*"
-pytest-cov = "*"
-pytest-mock = "*"
-mkdocs = "^1.4"
-moto = {extras = ["s3"], version = "*"}
-boto3-stubs = {extras = ["s3"], version = "*"}
-requests-mock = "*"
-types-requests = "*"
-pandas = ">=1.0.5"
+[dependency-groups]
+dev = [
+    "delta-spark",
+    "pyspark>=3.5",
+    "mkdocs-material",
+    "mkdocstrings-python",
+    "pre-commit",
+    "pytest",
+    "pytest-cov",
+    "pytest-mock",
+    "mkdocs>=1.4",
+    "moto[s3]",
+    "boto3-stubs[s3]",
+    "requests-mock",
+    "types-requests",
+    "pandas>=1.0.5",
+    "mypy>=1.19.0",
+]
+
+[[project.authors]]
+name = "Niels Lemmens"
+email = "niels.lemmens@husqvarnagroup.com"
 
 [build-system]
-requires = ["poetry-core>=1.0.0"]
-build-backend = "poetry.core.masonry.api"
+requires = ["hatchling"]
+build-backend = "hatchling.build"
 
-[tool.poetry.plugins."mkdocs.plugins"]
+[project.entry-points."mkdocs.plugins"]
 RootFiles = "mkdocs_plugins.files:RootFiles"
