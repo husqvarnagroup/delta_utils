@@ -44,9 +44,6 @@ jobs:
     - name: Docker build test image
       run: |
         docker compose build pytest
-    - name: Pip list
-      run: |
-        docker compose run pytest uv run python -m pip list
     - name: Test
       run: |
         docker compose run pytest

@@ -33,6 +33,7 @@ dev = [
     "types-requests",
     "pandas>=1.0.5",
     "mypy>=1.19.0",
+    "ruff>=0.14.8",
 ]
 
 [[project.authors]]
