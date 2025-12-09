@@ -11,20 +11,20 @@ repos:
       # Ruff version.
     rev: v0.14.8
     hooks:
-        # Run the linter.
-        - id: ruff-check
-          args: [--select=I, --fix]
-        # Run the formatter.
-        - id: ruff-format
+      # Run the linter.
+      - id: ruff-check
+        args: [--select=I, --fix]
+      # Run the formatter.
+      - id: ruff-format
   - repo: local
     hooks:
-      - id: hadolint
-        name: Hadolint
-        entry: hadolint Dockerfile
-        types: [dockerfile]
-        language: system
       - id: mypy
         name: mypy
         entry: uv run mypy
         language: system
         types: [ python ]
+      - id: hadolint
+        name: Hadolint
+        entry: hadolint Dockerfile
+        types: [dockerfile]
+        language: system
