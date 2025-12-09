@@ -2,7 +2,8 @@ import re
 from collections import Counter
 from typing import List, Optional
 
-from pyspark.sql import functions as F, types as T
+from pyspark.sql import functions as F
+from pyspark.sql import types as T
 from pyspark.sql.dataframe import DataFrame
 
 invalid_chars = r'[\[\]\(\)\.\s"\,\;\{\}\-\ :]'

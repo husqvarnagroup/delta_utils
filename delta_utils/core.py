@@ -1,7 +1,8 @@
 from datetime import datetime
 from typing import Optional
 
-from pyspark.sql import DataFrame, SparkSession, functions as F
+from pyspark.sql import DataFrame, SparkSession
+from pyspark.sql import functions as F
 from pyspark.sql.utils import AnalysisException
 
 

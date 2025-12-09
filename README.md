@@ -2,8 +2,8 @@
 
 ## Requirements
 
-- Python 3.10
-- Databricks Runtime Version 13.3 and above
+- Python 3.12
+- Databricks Runtime Version 17.3 and above
 
 
 ## Installation
@@ -28,10 +28,7 @@ For package management we use poetry. Go to root of project then enter
 
 ``` bash
 # Install all packages
-poetry install
-
-# Go into poetry shell to get your own virtual enviroment
-poetry shell
+uv sync
 ```
 
 ### Mkdocs
@@ -40,4 +37,13 @@ To start the documentation server locally enter
 
 ```bash
 mkdocs serve
+```
+
+
+### Run tests
+
+Set `TZ=UTC`
+
+```bash
+uv run pytest
 ```

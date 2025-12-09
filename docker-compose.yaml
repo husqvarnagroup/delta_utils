@@ -4,6 +4,8 @@ services:
             context: .
             dockerfile: Dockerfile
         privileged: true
+        environment:
+            TZ: UTC
         volumes:
             - ./:/var/project
-        command: ./runtests.sh
+        command: uv run pytest

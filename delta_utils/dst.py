@@ -3,7 +3,8 @@ from datetime import datetime
 from typing import Optional
 
 from delta import DeltaTable
-from pyspark.sql import SparkSession, functions as F
+from pyspark.sql import SparkSession
+from pyspark.sql import functions as F
 
 from .core import (
     NoNewDataException,

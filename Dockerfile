@@ -5,4 +5,4 @@ FROM ghcr.io/bulv1ne/pyspark-docker-base
 COPY . /var/project/
 WORKDIR /var/project/
 
-RUN poetry install
+RUN uv sync

@@ -1,6 +1,7 @@
 from datetime import datetime
 
-from pyspark.sql import functions as F, window as W
+from pyspark.sql import functions as F
+from pyspark.sql import window as W
 
 from delta_utils.dst import DeltaStaticTable
 
@@ -39,7 +40,8 @@ def base_dst(spark, tmp_path):
         df_service_old = dst.read("service")
         if df_service_old is not None:
             df_service_old = (
-                df_service_old.where(F.col("stop").isNull()).drop("stop")
+                df_service_old.where(F.col("stop").isNull())
+                .drop("stop")
                 # Only take name's that will be updated
                 .join(dst.read_changes("trusted_niels"), on=["name"], how="semi")
             )
