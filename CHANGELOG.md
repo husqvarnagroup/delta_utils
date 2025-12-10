@@ -6,6 +6,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 
 ## [Unreleased]
+### Changed
+- Support for pyspark>=4
+- Support for python>=3.12
+- Build backend to uv_build
+- Support for Databricks Runtime 17.3 LTS
 
 ## [0.6.0] - 2025-08-22
 ### Added
