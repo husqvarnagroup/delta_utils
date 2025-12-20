@@ -19,7 +19,7 @@ dependencies = [
 [dependency-groups]
 dev = [
     "delta-spark",
-    "pyspark>=3.5",
+    "pyspark>=3.5,<4.1",
     "mkdocs-material",
     "mkdocstrings-python",
     "pre-commit",
