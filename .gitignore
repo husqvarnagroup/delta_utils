@@ -162,3 +162,4 @@ cython_debug/
 
 spark-warehouse/
 metastore_db/
+uv.lock
