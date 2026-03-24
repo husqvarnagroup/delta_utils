@@ -7,6 +7,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.7.2] - 2026-03-24
+
 ## [0.7.0] - 2025-12-10
 ### Changed
 - Support for pyspark>=4
@@ -80,7 +82,8 @@ raises `ReadChangeFeedDisabled` exception
 - Tests
 - Documentation
 
-[Unreleased]: https://github.com/husqvarnagroup/delta_utils/compare/v0.7.0...HEAD
+[Unreleased]: https://github.com/husqvarnagroup/delta_utils/compare/v0.7.2...HEAD
+[0.7.2]: https://github.com/husqvarnagroup/delta_utils/compare/v0.7.1...v0.7.2
 [0.7.0]: https://github.com/husqvarnagroup/delta_utils/compare/v0.6.0...v0.7.0
 [0.6.0]: https://github.com/husqvarnagroup/delta_utils/compare/v0.5.0...v0.6.0
 [0.5.0]: https://github.com/husqvarnagroup/delta_utils/compare/v0.4.0...v0.5.0
