@@ -260,6 +260,116 @@ def test_flatten_table_no_nested_names(spark):
     ]
 
 
+def test_flatten_table_custom_column_delimiter(spark):
+    schema = T.StructType(
+        [
+            T.StructField(
+                "name",
+                T.StructType(
+                    [
+                        T.StructField("first name", T.StringType(), True),
+                        T.StructField("id", T.StringType(), True),
+                        T.StructField("@ID", T.StringType(), True),
+                        T.StructField("last,name", T.StringType(), True),
+                        T.StructField("lastname.test", T.StringType(), True),
+                        T.StructField(
+                            "nested",
+                            T.StructType(
+                                [T.StructField("test sfd", T.StringType(), True)]
+                            ),
+                            True,
+                        ),
+                    ]
+                ),
+            ),
+            T.StructField(
+                "items",
+                T.ArrayType(
+                    T.StructType([T.StructField("swo:rd", T.BooleanType(), True)])
+                ),
+            ),
+            T.StructField("id", T.StringType(), True),
+            T.StructField("dupli,cate", T.StringType(), True),
+            T.StructField("dupli;cate", T.StringType(), True),
+            T.StructField("ge n(de-r", T.StringType(), True),
+            T.StructField("sa;lar)y", T.IntegerType(), True),
+        ]
+    )
+
+    data = [
+        (
+            ("Linus", "123", "456", "Wallin", "W2", ("asd",)),
+            [(True,)],
+            "1",
+            "asd",
+            "asd2",
+            "Unknown",
+            4,
+        ),
+        (
+            ("Niels", "123", "768", "Lemmens", "L2", ("asd",)),
+            [(True,)],
+            "2",
+            "asd",
+            "asd2",
+            "Man",
+            3,
+        ),
+    ]
+
+    df = spark.createDataFrame(data, schema)
+    columns = flatten(df, column_delimiter="__").columns
+    assert columns == [
+        "name__first name",
+        "name__id",
+        "name__@ID",
+        "name__last,name",
+        "name__lastname__test",
+        "name__nested__test sfd",
+        "items",
+        "id",
+        "dupli,cate",
+        "dupli;cate",
+        "ge n(de-r",
+        "sa;lar)y",
+    ]
+
+
+def test_flatten_table_raise_error_custom_delimiter(spark):
+    schema = T.StructType(
+        [
+            T.StructField(
+                "name",
+                T.StructType(
+                    [
+                        T.StructField("id", T.StringType(), True),
+                    ]
+                ),
+            ),
+            T.StructField("name__id", T.StringType(), True),
+        ]
+    )
+
+    data = [
+        (
+            ("Linus",),
+            "1",
+        ),
+        (
+            ("Linus",),
+            "1",
+        ),
+    ]
+
+    df = spark.createDataFrame(data, schema)
+
+    with pytest.raises(
+        ValueError,
+        match=r"Could not rename column `name`\.`id` to name__id, because name__id already exists",
+    ):
+        flatten(df, column_delimiter="__")
+
+
 def test_drop_all_parameters_null_columns(spark):
     # Arrange
     input = spark.createDataFrame(
