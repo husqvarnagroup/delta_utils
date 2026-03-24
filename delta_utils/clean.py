@@ -31,7 +31,7 @@ def flatten_schema(schema: T.StructType, prefix: Optional[str] = None) -> List[s
     return fields
 
 
-def rename_flatten_schema(fields: List[str]):
+def rename_flatten_schema(fields: List[str], column_delimiter: str = "_"):
     valid_original_fields = [
         field.replace("`", "") for field in fields if "." not in field
     ]
@@ -39,7 +39,7 @@ def rename_flatten_schema(fields: List[str]):
 
     for field in fields:
         if "." in field:
-            new_col = field.replace(".", "_").replace("`", "")
+            new_col = field.replace(".", column_delimiter).replace("`", "")
 
             new_fields.append((field, new_col))
             # Check if the new column already exists
@@ -85,7 +85,7 @@ def fix_invalid_column_names(df: DataFrame) -> DataFrame:
     return df.selectExpr([f"`{k}` as `{v}`" for k, v in new_fields])
 
 
-def flatten(df: DataFrame, nested_names=True) -> DataFrame:
+def flatten(df: DataFrame, nested_names: bool = True, column_delimiter: str = "_") -> DataFrame:
     """
     Will take a nested dataframe and flatten it out.
 
@@ -97,7 +97,7 @@ def flatten(df: DataFrame, nested_names=True) -> DataFrame:
         DataFrame: Returns a flatter dataframe
 
     """
-    fields = rename_flatten_schema(flatten_schema(df.schema))
+    fields = rename_flatten_schema(flatten_schema(df.schema), column_delimiter)
 
     if nested_names:
         fields = [f"{k} as `{v}`" for k, v in fields]
