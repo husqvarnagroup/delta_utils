@@ -32,7 +32,7 @@ dev = [
     "requests-mock",
     "types-requests",
     "pandas>=3.0.2",
-    "mypy>=1.20.1",
+    "mypy>=1.20.2",
     "ruff>=0.14.8",
 ]
 
