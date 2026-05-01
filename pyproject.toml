@@ -9,7 +9,7 @@ documentation = "https://delta-utils.readthedocs.io/en/latest/"
 license = "MIT"
 
 dependencies = [
-    "boto3>=1.42.91",
+    "boto3>=1.43.2",
     "reverse_geocoder",
     "iso3166",
     "requests",
