@@ -31,7 +31,7 @@ dev = [
     "boto3-stubs[s3]",
     "requests-mock",
     "types-requests",
-    "pandas>=3.0.2",
+    "pandas>=3.0.5",
     "mypy>=2.3.1",
     "ruff>=0.16.4",
 ]
